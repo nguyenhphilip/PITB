@@ -1,0 +1,13 @@
+```{=html}
+
+<% for (const item of items) { %>
+  <div style = "display: block; margin-bottom: 0.15em;">
+    <div style = "display: inline-block; float: right;">
+      <span style = "color:gray; font-size:small;"><%= item.date %></span>
+    </div>
+    <div style = "display: inline-block;">
+      <a style = "display: inline-block;" href="<%- item.path %>"><%= item.title %></a>
+    </div>
+  </div>
+<% } %>
+```

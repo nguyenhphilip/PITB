@@ -1,0 +1,14 @@
+---
+title: ""
+listing:
+  contents: poems
+  template: archive.ejs
+  sort: "date desc"
+  type: default
+  categories: false
+  page-size: 5
+  sort-ui: false
+  filter-ui: false
+page-layout: article
+title-block-banner: false
+---

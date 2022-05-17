@@ -1,0 +1,961 @@
+---
+title: "ABCD 2.0 Prematurity Analyses"
+date: "07-31-2019"
+categories: [ABCD, R]
+title-block-banner: false
+page-layout: article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# load libraries
+sapply(c("tidyverse", "purrr", "here","knitr", "kableExtra","ggpubr","cowplot","gridExtra"), require, character.only = TRUE)
+```
+
+```{r libraries and load data, include=FALSE, echo=FALSE}
+
+
+dat <- read_csv("2.0-premat-ncog.csv")
+
+dat_updated <- dat %>%
+  mutate(premature_category = case_when(
+    40 - devhx_12_p >= 37 | devhx_12a_p == 0  ~ "Full term",
+    40 - devhx_12_p > 31 & 40 - devhx_12_p < 37 ~ "Premature",
+    # filter out those who didn't know how many weeks premature
+    devhx_12_p != 999 & 40 - devhx_12_p <= 31 ~ "Very premature")) 
+
+options(knitr.table.format = "html")
+```
+
+```{r tables, echo=FALSE, message=FALSE}
+dat_filtered <- dat_updated %>% filter(!is.na(premature_category))
+
+dat_filtered %>% group_by(premature_category) %>% count() %>% 
+  kable() %>% kable_styling(bootstrap_options = "striped", full_width = F, position = "left") %>%
+  footnote(general = c("Full term = Born 37+ weeks", "Premature = Born between 32 - 36 weeks", "Very premature = Born 31 weeks or less"))
+
+ncog_tasks <- names(dat_filtered %>% select(nihtbx_cardsort_rawscore:pea_wiscv_trs))
+
+gathered_prematurity <- dat_filtered %>% group_by(premature_category) %>% 
+   summarise_at(ncog_tasks, list(mean = mean,sd = sd), na.rm = TRUE)
+
+means <- gathered_prematurity %>% gather(task, mean, nihtbx_cardsort_rawscore_mean:pea_wiscv_trs_mean) %>% select(premature_category, task, mean)
+
+means$task <- gsub("_mean$", "", means$task)
+
+sds <- gathered_prematurity %>% gather(task, sd, nihtbx_cardsort_rawscore_sd:pea_wiscv_trs_sd) %>%
+  select(premature_category, task, sd)
+
+sds$task <- gsub("_sd$", "", sds$task)
+
+means_and_sd <- means %>% left_join(sds, by = c("premature_category","task"))
+
+```
+
+
+```{r theme set, echo = FALSE, include = FALSE, message = FALSE, warning = FALSE}
+theme_set(theme_light())
+spread_means <- means %>% spread(task, mean)
+```
+
+<hr>
+
+## Raw Scores {.tabset .tabset-fade}
+
+### nihtb card sort
+
+```{r nihtb card sort raw, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_cardsort_rawscore, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_cardsort_rawscore, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_cardsort_rawscore, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Average Raw Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_cardsort_rawscore") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb flanker
+
+```{r nihtb flanker raw, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_flanker_rawscore, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_flanker_rawscore, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_flanker_rawscore, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Average Raw Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_flanker_rawscore") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb picture
+
+```{r nihtb picture raw, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_picture_rawscore, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_picture_rawscore, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_picture_rawscore, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Average Raw Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_picture_rawscore") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb pattern comparison
+
+```{r nihtb pattern raw, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_pattern_rawscore, fill = premature_category)) +
+  geom_histogram(bins = 40) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_pattern_rawscore, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_pattern_rawscore, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Average Raw Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_pattern_rawscore") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb list sort
+
+```{r nihtb list sort raw, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_list_rawscore, fill = premature_category)) +
+  geom_histogram(bins = 40) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_list_rawscore, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_list_rawscore, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Average Raw Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_list_rawscore") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+##
+
+<hr>
+
+## Uncorrected Scores {.tabset .tabset-fade}
+
+### nihtb card sort
+
+```{r nihtb card sort uncorrected, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+spread_means <- means %>% spread(task, mean)
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_cardsort_uncorrected, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_cardsort_uncorrected, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_cardsort_uncorrected, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Average Uncorrected Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_un_t <- means_and_sd %>%
+  filter(task == "nihtbx_cardsort_uncorrected") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_un_t
+```
+
+### nihtb reading
+
+```{r nihtb reading uncorrected, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_reading_uncorrected, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_reading_uncorrected, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_reading_uncorrected, fill = premature_category)) + 
+  geom_col() +
+  labs(x = "", y = "Average Uncorrected Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_reading_uncorrected") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb flanker
+
+```{r nihtb flanker uncorrected, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_flanker_uncorrected, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_flanker_uncorrected, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_flanker_uncorrected, fill = premature_category)) + 
+  geom_col() +
+  labs(x = "", y = "Average Uncorrected Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_flanker_uncorrected") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb picvocab
+
+```{r nihtb picvocab uncorrected, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_picvocab_uncorrected, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_picvocab_uncorrected, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_picvocab_uncorrected, fill = premature_category)) + 
+  geom_col() +
+  labs(x = "", y = "Average Uncorrected Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_picvocab_uncorrected") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb picture
+
+```{r nihtb picture uncorrected, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_picture_uncorrected, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_picture_uncorrected, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_picture_uncorrected, fill = premature_category)) + 
+  geom_col() +
+  labs(x = "", y = "Average Uncorrected Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_picture_uncorrected") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb pattern comparison
+
+```{r nihtb pattern uncorrected, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_pattern_uncorrected, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_pattern_uncorrected, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_pattern_uncorrected, fill = premature_category)) + 
+  geom_col() +
+  labs(x = "", y = "Average Uncorrected Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_pattern_uncorrected") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### nihtb list sort
+
+```{r nihtb list uncorrected, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = nihtbx_list_uncorrected, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = nihtbx_list_uncorrected, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = nihtbx_list_uncorrected, fill = premature_category)) + 
+  geom_col() +
+  labs(x = "", y = "Average Uncorrected Score") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "nihtbx_list_uncorrected") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+##
+
+<hr>
+
+## Little Man Task {.tabset .tabset-fade}
+
+### LMT Avg Reaction Time (ms)
+
+```{r LMT avg RT, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = lmt_scr_avg_rt, fill = premature_category)) +
+  geom_histogram(bins = 35) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = lmt_scr_avg_rt, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = lmt_scr_avg_rt, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Average Reaction Time (ms)") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "lmt_scr_avg_rt") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### LMT Avg Score Correct
+
+```{r LMT avg score, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = lmt_scr_num_correct, fill = premature_category)) +
+  geom_histogram(bins = 30) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = lmt_scr_num_correct, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = lmt_scr_num_correct, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Average Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "lmt_scr_num_correct") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+##
+
+<hr>
+
+## Pearson/RAVLT tasks {.tabset .tabset-fade}
+
+### RAVLT Short Delay Trial I
+
+```{r RAVLT Short Delay Trial I, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_i_tc, fill = premature_category)) +
+  geom_histogram(bins = 15) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_i_tc, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = pea_ravlt_sd_trial_i_tc, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_ravlt_sd_trial_i_tc") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### RAVLT Short Delay Trial II
+
+```{r RAVLT Short Delay Trial II, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_ii_tc, fill = premature_category)) +
+  geom_histogram(bins = 15) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_ii_tc, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = pea_ravlt_sd_trial_ii_tc, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_ravlt_sd_trial_ii_tc") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### RAVLT Short Delay Trial III
+
+```{r RAVLT Short Delay Trial III, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_iii_tc, fill = premature_category)) +
+  geom_histogram(bins = 15) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_iii_tc, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = pea_ravlt_sd_trial_iii_tc, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_ravlt_sd_trial_iii_tc") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### RAVLT Short Delay Trial IV
+
+```{r RAVLT Short Delay Trial IV, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_iv_tc, fill = premature_category)) +
+  geom_histogram(bins = 15) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_iv_tc, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = pea_ravlt_sd_trial_iv_tc, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_ravlt_sd_trial_iv_tc") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### RAVLT Short Delay Trial V
+
+```{r RAVLT Short Delay Trial V, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_v_tc, fill = premature_category)) +
+  geom_histogram(bins = 15) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_v_tc, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = pea_ravlt_sd_trial_v_tc, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_ravlt_sd_trial_v_tc") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### RAVLT Short Delay Trial VI
+
+```{r RAVLT Short Delay Trial VI, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_vi_tc, fill = premature_category)) +
+  geom_histogram(bins = 15) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_trial_vi_tc, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = pea_ravlt_sd_trial_vi_tc, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_ravlt_sd_trial_vi_tc") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### RAVLT Long Delay Trial VII
+
+```{r RAVLT Long Delay Trial VII, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_ravlt_ld_trial_vii_tc, fill = premature_category)) +
+  geom_histogram(bins = 15) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_ravlt_ld_trial_vii_tc, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = pea_ravlt_ld_trial_vii_tc, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_ravlt_ld_trial_vii_tc") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### RAVLT Short Delay List B
+
+```{r RAVLT Short Delay List B, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_listb_tc, fill = premature_category)) +
+  geom_histogram(bins = 15) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_ravlt_sd_listb_tc, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% 
+  ggplot(aes(x = premature_category, y = pea_ravlt_sd_listb_tc, fill = premature_category)) +
+  geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_ravlt_sd_listb_tc") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+### Pearson Matrix Reasoning
+
+```{r RAVLT mtx reasoning, echo = FALSE, message=FALSE, warning=FALSE, fig.width=12,fig.height=6}
+
+hist <- dat_filtered %>% ggplot(aes(x = pea_wiscv_trs, fill = premature_category)) +
+  geom_histogram(bins = 30) +
+  guides(fill = FALSE) + 
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+dens <- dat_filtered %>% ggplot(aes(x = pea_wiscv_trs, fill = premature_category)) +
+  geom_density(alpha = 0.3) +
+  guides(fill = FALSE) +
+  labs(x = "") +
+  theme(text = element_text(size = 14))
+
+barp <- spread_means %>% ggplot(aes(x = premature_category, y = pea_wiscv_trs, fill = premature_category)) + geom_col() +
+  labs(x = "", y = "Avg Number Correct") +
+  guides(fill = FALSE) + 
+  theme(text = element_text(size = 14))
+
+card_sort_t <- means_and_sd %>%
+  filter(task == "pea_wiscv_trs") %>%
+  select(-task) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top")
+
+ggdraw() +
+  draw_plot(dens, x = 0.5, y = 0, width = 0.5, height = 0.5) +
+  draw_plot(hist, x = 0.5, y = 0.5, width = 0.5, height = 0.5) +
+  draw_plot(barp, x = 0, y = 0, height = 1, width = 0.5)
+
+card_sort_t
+```
+
+##
+
+<hr>
+
+# Neurocognitive Performance by Task and Prematurity Group Full Table
+
+```{r cognitive performance tables, echo = FALSE, message=FALSE, warning=FALSE}
+
+means_and_sd %>% 
+  select(task, premature_category, mean, sd) %>%
+  mutate(premature_category = fct_reorder(premature_category, mean)) %>%
+  arrange(task, desc(premature_category)) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = T, position = "left") %>%
+  collapse_rows(columns = 1, valign = "top") %>%
+  pack_rows("",1,3) %>%
+  pack_rows("",4,6) %>%
+  pack_rows("",7,9) %>%
+  pack_rows("",10,12) %>%
+  pack_rows("",13,15) %>%
+  pack_rows("",16,18) %>%
+  pack_rows("",19,21) %>%
+  pack_rows("",22,24) %>%
+  pack_rows("",25,27) %>%
+  pack_rows("",28,30) %>%
+  pack_rows("",31,33) %>%
+  pack_rows("",34,36) %>%
+  pack_rows("",37,39) %>%
+  pack_rows("",40,42) %>%
+  pack_rows("",43,45) %>%
+  pack_rows("",46,48) %>%
+  pack_rows("",49,51) %>%
+  pack_rows("",52,54) %>%
+  pack_rows("",55,57) %>%
+  pack_rows("",58,60) %>%
+  pack_rows("",61,63) %>%
+  pack_rows("",64,66) %>%
+  pack_rows("",67,69) %>%
+  pack_rows("",70,72) %>%
+  pack_rows("",73,75)
+```

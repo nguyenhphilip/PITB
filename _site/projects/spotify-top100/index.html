@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.328">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2020-12-19">
+<meta name="description" content="A quick analysis of how my music listening has changed on Spotify.">
+
+<title>Phil in the Blank - Spotify Top 100 Songs Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<link href="../../images/favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link id="quarto-text-highlighting-styles" href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta name="twitter:title" content="Phil in the Blank - Spotify Top 100 Songs Analysis">
+<meta name="twitter:description" content="A quick analysis of how my music listening has changed on Spotify.">
+<meta name="twitter:creator" content="@NguyenHPhil">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Spotify Top 100 Songs Analysis</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Phil in the Blank</a> 
+    </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">Posts</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../poems.qmd" class="sidebar-item-text sidebar-link">Poems</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects.html" class="sidebar-item-text sidebar-link">Projects</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../about.qmd" class="sidebar-item-text sidebar-link">About</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Spotify Top 100 Songs Analysis</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">data science</div>
+    <div class="quarto-category">Spotify</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    A quick analysis of how my music listening has changed on Spotify.
+  </div>
+</div>
+
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 19, 2020</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<p>I’ve been an avid Spotify user since my younger high-school gaming days (hipster flex), but Spotify only recently started releasing yearly music reviews that summarize the music you’ve listened to throughout that year. After seeing mine for 2020, I wondered how much my music taste had changed over time, especially given the 2020 coronavirus pandemic. Thankfully there’s a R package called <code>spotifyr</code> that provides intuitive wrapper functions that allows one to analyze practically the entirety of Spotify music data! What follows is a quick, informal dive into this. (For getting setup, I suggest checking out the Github repo <a href="https://github.com/charlie86/spotifyr">here</a> and this tutorial <a href="https://msmith7161.github.io/what-is-speechiness/">here</a>.)</p>
+<section id="the-data-and-song-features" class="level1">
+<h1>The Data and Song Features</h1>
+<p>To answer my question, I’m using my “Top 100 songs of the Year” from 2016-2020 (500 songs), looking specifically at nine features associated with each song (pretty neat that Spotify does this!). I knew I’d been listening to more instrumental, acoustic music since I started learning to play guitar, so I was curious about what the data showed. The features, from their <a href="https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/">API</a>:</p>
+<ul>
+<li><p><strong>acousticness</strong>: A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic</p></li>
+<li><p><strong>danceability</strong>: How suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.</p></li>
+<li><p><strong>energy</strong>: A measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.</p></li>
+<li><p><strong>instrumentalness</strong>: Predicts whether a track contains no vocals. “Ooh” and “aah” sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly “vocal”. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.</p></li>
+<li><p><strong>liveness</strong>: Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.</p></li>
+<li><p><strong>loudness</strong>: The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typical range between -60 and 0 db.</p></li>
+<li><p><strong>speechiness</strong>: Detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g.&nbsp;talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.</p></li>
+<li><p><strong>tempo</strong>: The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.</p></li>
+<li><p><strong>valence</strong>: A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g.&nbsp;happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g.&nbsp;sad, depressed, angry).</p></li>
+</ul>
+</section>
+<section id="uh-oh" class="level1">
+<h1>Uh Oh</h1>
+<p>Wellp, looking at the different facets, looks like acousticness and instrumentalness has increased, just as suspected. But valence (positive emotion) has decreased, hitting a low in 2020! Whether or not I was actually sadder on average each day of 2020 is another story…</p>
+<p><img src="pressure-1.png" class="img-fluid"></p>
+<p>Here’s a closer look via some bar plots. The general trend is that everything has decreased for each feature except acousticness and instrumentalness. Loudness has decreased though, which maybe just means I’m getting older… or more sensitive to loud music. But it makes sense if you think about the increase in acousticness.</p>
+<p><img src="barplot-1.png" class="img-fluid"></p>
+<p>And numbers. Voilà, une table.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Features</th>
+<th>2016</th>
+<th>2017</th>
+<th>2018</th>
+<th>2019</th>
+<th>2020</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>acousticness</td>
+<td>0.24</td>
+<td>0.28</td>
+<td>0.39</td>
+<td>0.48</td>
+<td>0.56</td>
+</tr>
+<tr class="even">
+<td>danceability</td>
+<td>0.59</td>
+<td>0.62</td>
+<td>0.56</td>
+<td>0.53</td>
+<td>0.49</td>
+</tr>
+<tr class="odd">
+<td>energy</td>
+<td>0.63</td>
+<td>0.62</td>
+<td>0.52</td>
+<td>0.49</td>
+<td>0.42</td>
+</tr>
+<tr class="even">
+<td>instrumentalness</td>
+<td>0.12</td>
+<td>0.11</td>
+<td>0.18</td>
+<td>0.24</td>
+<td>0.52</td>
+</tr>
+<tr class="odd">
+<td>liveness</td>
+<td>0.18</td>
+<td>0.15</td>
+<td>0.17</td>
+<td>0.15</td>
+<td>0.14</td>
+</tr>
+<tr class="even">
+<td>loudness</td>
+<td>-7.41</td>
+<td>-8.07</td>
+<td>-10.11</td>
+<td>-11.85</td>
+<td>-13.37</td>
+</tr>
+<tr class="odd">
+<td>speechiness</td>
+<td>0.09</td>
+<td>0.07</td>
+<td>0.06</td>
+<td>0.04</td>
+<td>0.04</td>
+</tr>
+<tr class="even">
+<td>tempo</td>
+<td>122.08</td>
+<td>123.69</td>
+<td>121.12</td>
+<td>121.26</td>
+<td>116.32</td>
+</tr>
+<tr class="odd">
+<td>valence</td>
+<td>0.45</td>
+<td>0.48</td>
+<td>0.41</td>
+<td>0.42</td>
+<td>0.31</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="inconclusive-conclusions" class="level1">
+<h1>Inconclusive Conclusions</h1>
+<p>I’d say from personal experience that this trend toward increased acousticness and instrumentalness is a general feature of widened musical taste. I imagine it’s also associated with more bouts of work and study sessions, especially in 2020 given I started graduate school. But I also discovered more music of an acoustic, instrumental nature (Olafur Arnalds, City of the Sun, Max Richter) which I played HEAVILY on repeat while slacklining and rollerblading, two new hobbies I picked up over the summer. My love of fingerpicking on guitar probably has an influence on that too.</p>
+<p>As for the valence, well, let’s find out next year if that changes. I don’t actually feel like my subjective experience of days are all too different from the previous years, although some days are definitely lonelier. In moments like those I often turn to music. What the data doesn’t capture is the upswing in mood I feel from that form of connection. And don’t worry, I’m still dancing in my kitchen.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

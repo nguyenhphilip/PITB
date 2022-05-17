@@ -1,0 +1,14 @@
+---
+title: ""
+listing:
+  contents: projects
+  sort: "date desc"
+  type: default
+  categories: false
+  page-size: 5
+  max-description-length: 100
+  sort-ui: false
+  filter-ui: false
+page-layout: article
+title-block-banner: false
+---
