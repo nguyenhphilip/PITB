@@ -1,27 +1,13 @@
 {
   "listingMap": {
-    "index.qmd": [
-      "posts"
-    ],
-    "posts/index.qmd": [
-      "posts",
-      "/posts",
-      "../posts",
-      "posts/"
-    ],
-    "archive.qmd": [
-      "posts/",
-      "posts"
-    ],
-    "posts.qmd": [
-      "posts/",
-      "posts"
+    "poems.qmd": [
+      "poems"
     ],
     "projects.qmd": [
       "projects"
     ],
-    "poems.qmd": [
-      "poems"
+    "posts.qmd": [
+      "posts"
     ]
   }
 }
