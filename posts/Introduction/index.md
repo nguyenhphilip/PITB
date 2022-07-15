@@ -1,5 +1,5 @@
 ---
-title: "0: Introduction"
+title: "0: Introduction: Walking El Camino de Santiago"
 date: "12-12-2017"
 categories: [Camino]
 ---
@@ -48,7 +48,7 @@ One night, sitting on the crest of Seboeis Lake, I watched the clear water shimm
 
 Moments like these were rare. I recognized they were more likely to visit in conditions that allow for total stillness. Should a person survive what initially feels like a trial by fire, this staggering state of loneliness, they emerge more alive and deeply in-tune with the world around them. Their capacity for love, understanding, and presence deepens. They become infinitely more capable. They are grateful to have been called back as cast members in the grand play of the cosmos.
 
-![](/assets/photos/lake.jpg)
+![](/photos/lake.jpg)
 
 ## Canada
 

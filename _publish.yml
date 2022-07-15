@@ -1,0 +1,4 @@
+- source: project
+  netlify:
+    - id: 67056a8d-4676-4bef-befb-0e9386053342
+      url: 'https://deft-cannoli-583c56.netlify.app'

@@ -1,0 +1,168 @@
+---
+title: "Using Simulation to Understand Statistics"
+editor: visual
+---
+
+# Motivation
+
+Statistics in the 21st century should be learned using computers. Specifically, simulations can be used to understand statistical concepts through play and tinkering (the best way to learn!).
+
+What follows are notes and examples I played with from the book [Learning Statistical Models Through Simulation in R](https://psyteachr.github.io/stat-models-v1/introduction.html).
+
+# 1) Introduction
+
+Simulation inverts the process of sampling from a population and then estimating parameters. We instead assume our data were generated from a certain process and see if we can reproduce the parameters that define the model.
+
+## Simulating Reaction Times
+
+Let's assume that `mean reaction time` is normally distributed with a mean of $480$ and SD of $40$ for a group of 50 parents with toddlers, whereas 50 parents without toddlers are assumed to have mean reaction times from a normal distribution with a mean of $500$ and SD of $40$.
+
+```{r}
+library(tidyverse)
+set.seed(2021)
+
+todds <- rnorm(n=50, mean=480, sd=40)
+controls <- rnorm(n=50, mean=500, sd=40)
+
+df <- tibble(groups = rep(c("todd", "control"), each=50),
+             rt = c(todds, controls)) %>%
+  # compute z-scores
+  mutate(z_rt = (rt-mean(rt))/sd(rt))
+```
+
+Let's plot the data:
+
+```{r}
+df %>%
+  ggplot(aes(x=z_rt, fill=groups)) +
+  geom_density(alpha=0.5) +
+  labs(title="Z-Score Reaction Times for Controls versus Parents with Toddlers",
+       x="Z-score")
+```
+
+We have a model and know the parameters of the model. Let's now compare the mean and standard deviations of the simulated samples generated from the model. Are they different from the population parameters we set? We will run a t-test too.
+
+```{r}
+
+df %>%
+  group_by(groups) %>%
+  summarize(mean_rt = mean(rt),
+            sd_rt = sd(rt))
+
+```
+
+```{r}
+t.test(df$rt ~ df$groups)
+```
+
+We see that with group sizes of 50, the estimated parameters are slightly off from the population parameters, though our t-test is still able to detect a difference.
+
+We can improve our estimate this by increasing the sample size.
+
+```{r}
+group_size <- 1000
+
+todds <- rnorm(n=group_size, mean=480, sd=40)
+controls <- rnorm(n=group_size, mean=500, sd=40)
+
+df <- tibble(groups = rep(c("todd", "control"), each=group_size),
+             rt = c(todds, controls)) %>%
+  # compute z-scores
+  mutate(z_rt = (rt-mean(rt))/sd(rt))
+
+df %>%
+  ggplot(aes(x=z_rt, fill=groups)) +
+  geom_density(alpha=0.5) +
+  labs(title="Z-Score Reaction Times for Controls versus Parents with Toddlers (n=2000)",
+       x="Z-score")
+```
+
+Now the estimates are closer to the true population value (though still not quite perfect)!
+
+```{r}
+df %>%
+  group_by(groups) %>%
+  summarize(mean_rt = mean(rt),
+            sd_rt = sd(rt))
+
+```
+
+```{r}
+t.test(df$rt ~ df$groups)
+```
+
+# 2) Correlation and Regression
+
+Correlations are a measure how strongly related two variables are in terms of **strength** and **direction**. Let's examine this using the `Starwars` dataset.
+
+```{r}
+library(tidyverse)
+library(corrr)
+
+starwars %>%
+  select(height, mass, birth_year) %>%
+  correlate() %>%
+  # View unique pairs
+  shave() %>%
+  fashion()
+```
+
+Correlations only provide a good description of the relationship between a pair of variables if they are linearly related. We can't determine this from the correlation value alone, so a plot will be helpful.
+
+```{r}
+pairs(~ height + mass + birth_year, starwars)
+```
+
+We see that there is an outlier with a large mass, and another with an extremely old age. Let's examine and remove these data points for now.
+
+```{r}
+starwars %>%
+  filter(mass > 1200) %>%
+  select(name, mass, height, birth_year)
+```
+
+
+```{r}
+starwars %>%
+  filter(birth_year > 800) %>%
+  select(name, mass, height, birth_year)
+```
+
+```{r}
+starwars2 <- starwars %>%
+  filter(name != "Jabba Desilijic Tiure") %>%
+  filter(name != "Yoda")
+
+pairs(~height + mass + birth_year, starwars2)
+
+```
+
+Much better for our correlations now. Let's see what the updated values are.
+
+```{r}
+starwars2 %>%
+  select(height, mass, birth_year) %>%
+  correlate() %>%
+  shave() %>%
+  fashion() %>%
+  knitr::kable()
+```
+
+It's not always a good idea to remove outliers, so we can use the Spearman rank correlation to reduce the influence of outliers while still including them.
+
+```{r}
+starwars %>%
+  select(height, mass, birth_year) %>%
+  correlate(method = "spearman") %>%
+  shave() %>%
+  fashion() %>%
+  knitr::kable()
+```
+
+## Simulating Bivariate Data
+
+To simulate bivariate data, we need to understand what a multivariable normal distribution (MVN) is. MVNs extend univariate normal distributions in that they describe the relationships of more than one variable. You can think of them as distributions of vectors that live in a multi-dimensional space.
+
+What we need to simulate from them is similar to the univariate case: number of data points, and values for the location and scale parameters. The location parameter $\mu$ is a vector specifying the means of each variable, and the scale parameter specifies the covariance between variables. 
+
+Covariance = $\rho_{xy} \times \sigma_x \times \sigma_y$

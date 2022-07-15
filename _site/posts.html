@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-0.9.328">
+<meta name="generator" content="quarto-1.0.14">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -17,13 +17,14 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 </style>
 
+
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
-<meta name="quarto:offset" content="./">
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
 <link href="./photos/favicon.ico" rel="icon">
 <script src="site_libs/quarto-listing/list.min.js"></script>
 <script src="site_libs/quarto-listing/quarto-listing.js"></script>
@@ -32,10 +33,10 @@ ul.task-list{list-style: none;}
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link id="quarto-text-highlighting-styles" href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -65,10 +66,10 @@ ul.task-list{list-style: none;}
     }
 
     const options = {
-      valueNames: ['listing-title','listing-date','listing-categories','listing-path','listing-author','listing-description','listing-filename','listing-file-modified','listing-reading-time','listing-image','listing-tags',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] }],
+      valueNames: ['listing-freeze','listing-title-block-banner','listing-title','listing-date','listing-categories','listing-path','listing-author','listing-description','listing-filename','listing-file-modified','listing-reading-time','listing-subtitle','listing-image','listing-tags',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] }],
       page: 5,
     pagination: { item: "<li class='page-item'><a class='page page-link' href='#'></a></li>" },
-      searchColumns: ["listing-title","listing-date","listing-categories","listing-path","listing-author","listing-description","listing-filename","listing-file-modified","listing-reading-time","listing-image","listing-tags"],
+      searchColumns: ["listing-freeze","listing-title-block-banner","listing-title","listing-date","listing-categories","listing-path","listing-author","listing-description","listing-filename","listing-file-modified","listing-reading-time","listing-subtitle","listing-image","listing-tags"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -78,6 +79,12 @@ ul.task-list{list-style: none;}
       window['quarto-listing-loaded']();
     }
   });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -88,7 +95,7 @@ ul.task-list{list-style: none;}
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="floating fullcontent">
+<body class="nav-sidebar floating fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -147,6 +154,38 @@ ul.task-list{list-style: none;}
 
 
 <div class="quarto-listing quarto-listing-container-custom" id="listing-listing">
+  <div style="display: block; margin-bottom: 0.15em;">
+    <div style="display: inline-block; float: right;">
+      <span style="color:gray; font-size:small;">Jul 10, 2022</span>
+    </div>
+    <div style="display: inline-block;">
+      <a style="display: inline-block;" href="./posts/22-07-10-I_Wanna_Be/index.html">I Wanna Be</a>
+    </div>
+  </div>
+  <div style="display: block; margin-bottom: 0.15em;">
+    <div style="display: inline-block; float: right;">
+      <span style="color:gray; font-size:small;">Jul 3, 2022</span>
+    </div>
+    <div style="display: inline-block;">
+      <a style="display: inline-block;" href="./posts/22-07-03-chaos/index.html">Chaos</a>
+    </div>
+  </div>
+  <div style="display: block; margin-bottom: 0.15em;">
+    <div style="display: inline-block; float: right;">
+      <span style="color:gray; font-size:small;">Jun 25, 2022</span>
+    </div>
+    <div style="display: inline-block;">
+      <a style="display: inline-block;" href="./posts/22-06-25-slacklining/index.html">Slacklining</a>
+    </div>
+  </div>
+  <div style="display: block; margin-bottom: 0.15em;">
+    <div style="display: inline-block; float: right;">
+      <span style="color:gray; font-size:small;">Jun 19, 2022</span>
+    </div>
+    <div style="display: inline-block;">
+      <a style="display: inline-block;" href="./posts/22-06-19-something_new/index.html">Something New</a>
+    </div>
+  </div>
   <div style="display: block; margin-bottom: 0.15em;">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 6, 2022</span>
@@ -632,7 +671,7 @@ ul.task-list{list-style: none;}
       <span style="color:gray; font-size:small;">Dec 12, 2017</span>
     </div>
     <div style="display: inline-block;">
-      <a style="display: inline-block;" href="./posts/Introduction/index.html">0: Introduction</a>
+      <a style="display: inline-block;" href="./posts/Introduction/index.html">0: Introduction: Walking El Camino de Santiago</a>
     </div>
   </div>
   <div style="display: block; margin-bottom: 0.15em;">
@@ -650,8 +689,23 @@ No matching items
   <ul class="pagination"></ul>
 </nav>
 </div></main> <!-- /main -->
-<script type="application/javascript">
+<script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    toggleBodyColorMode(window.document.querySelector("link#quarto-bootstrap"));
+  }
+  toggleBodyColorPrimary();  
   const icon = "";
   const anchorJS = new window.AnchorJS();
   anchorJS.options = {

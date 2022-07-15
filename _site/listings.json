@@ -2,6 +2,8 @@
   {
     "listing": "/poems.html",
     "items": [
+      "/poems/07-03-22-chaos/index.html",
+      "/poems/morning/index.html",
       "/poems/hands/index.html",
       "/poems/papa/index.html",
       "/poems/waiting/index.html",
@@ -40,7 +42,6 @@
       "/poems/our-room/index.html",
       "/poems/knowledge/index.html",
       "/poems/improvise/index.html",
-      "/poems/morning/index.html",
       "/poems/Again/index.html",
       "/poems/Love/index.html",
       "/poems/dwell/index.html",
@@ -73,6 +74,10 @@
   {
     "listing": "/posts.html",
     "items": [
+      "/posts/22-07-10-I_Wanna_Be/index.html",
+      "/posts/22-07-03-chaos/index.html",
+      "/posts/22-06-25-slacklining/index.html",
+      "/posts/22-06-19-something_new/index.html",
       "/posts/breaking/index.html",
       "/posts/booth/index.html",
       "/posts/2021/index.html",

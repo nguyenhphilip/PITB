@@ -1,6 +1,6 @@
 ---
 title: "Morning"
-date: "04-29-2020"
+date: "04-29-2022"
 categories: [poems]
 title-block-banner: false
 ---
@@ -20,4 +20,3 @@ title-block-banner: false
 * and suddenly remembers
 * the shape of dirt.
 </div>
-

@@ -1,0 +1,12 @@
+---
+title: "The Ising model for psychometrics"
+draft: TRUE
+---
+
+# Background
+
+The Ising model originates from physics and has since been applied in other sciences as a theoretical model and as a likelihood function for modeling statistical dependencies between binary variables.
+
+# Application in psychometric network analysis
+
+# Interpreting results
