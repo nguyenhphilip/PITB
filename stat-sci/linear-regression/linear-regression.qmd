@@ -1,0 +1,54 @@
+---
+title: "Linear Regression"
+format: html
+editor: visual
+draft: TRUE
+published: FALSE
+---
+
+# Simple Linear Regression
+
+Let's load some packages to simulate what linear regression does.
+
+```{r}
+library(rstanarm)
+library(tidyverse)
+n <- 100
+a <- 0.2
+b <- 0.3
+sigma <- 0.5
+
+ 
+d <- tibble(
+ x = 1:n,
+ y = a + b*x + sigma*rnorm(n)
+)
+
+d <- tibble(
+  n = 10:100
+) %>%
+  mutate(
+    model = map(n, function(n){
+      x = 1:n
+      y = a + b*x + sigma*rnorm(length(x))
+      lm(y ~ x)
+    }),
+    model_summaries = map(model, broom::glance),
+    model_coef = map(model, broom::tidy))
+
+d %>%
+  unnest(model_coef) %>%
+  filter(term == "(Intercept)") %>%
+  ggplot(aes(x = n, y = estimate)) +
+  geom_point() +
+  #geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error)) +
+  geom_hline(yintercept = a, color = 'red')
+
+d %>%
+  unnest(model_coef) %>%
+  filter(term == "(Intercept)") %>%
+  ggplot(aes(x = n, y = std.error)) +
+  geom_point()
+  #geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error)) +
+  # geom_hline(yintercept = a, color = 'red')
+```
