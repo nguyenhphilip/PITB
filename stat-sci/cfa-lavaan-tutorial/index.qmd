@@ -1,0 +1,41 @@
+---
+title: "Factor Analysis with Lavaan"
+editor: visual
+draft: TRUE
+published: FALSE
+---
+
+```{r}
+library(lavaan)
+library(tidyverse)
+d <- HolzingerSwineford1939
+d %>% glimpse()
+```
+
+> The `HolzingerSwineford1939` data consists of mental ability test scores of seventh- and eighth-grade children from two different schools (Pasteur and Grant-White). In our version of the dataset, only 9 out of the original 26 tests are included. A CFA model that is often proposed for these 9 variables consists of three latent variables (or factors), each with three indicators:
+>
+> -   a visual factor measured by 3 variables: x1, x2 and x3
+> -   a textual factor measured by 3 variables: x4, x5 and x6
+> -   a speed factor measured by 3 variables: x7, x8 and x9
+>
+> The corresponding lavaan syntax for specifying this model is as follows:
+>
+> -   visual =\~ x1 + x2 + x3
+>
+> -   textual =\~ x4 + x5 + x6
+>
+> -   speed =\~ x7 + x8 + x9
+
+```{r}
+# syntax for our latent variable model with three latent factors, each defined by three indicators
+
+Hs.model <- '
+   # latent variables
+     visual =~ x1 + x2 + x3
+     textual =~ x4 + x5 + x6
+     speed =~ x7 + x8 + x9
+'
+
+fit <- cfa(Hs.model, data = d)
+summary(fit)
+```

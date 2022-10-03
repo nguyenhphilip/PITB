@@ -14,3 +14,9 @@ We'll do this the Bayesian way to build up modeling intuition.
 # library(tidyverse)
 # haven::read_sav("~/Desktop/dataverse_files/w4birth_dvn.sav")
 ```
+
+# Mixed-Effects Modeling
+
+```{r}
+
+```
