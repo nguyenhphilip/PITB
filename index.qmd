@@ -1,10 +1,10 @@
 ---
 title: ""
-image: images/me.jpeg
+image: images/me.jpg
 page-layout: article
 ---
 
-![](photos/me.jpeg)
+![](photos/me.jpg)
 
 Hello! I'm Phil. This blog is simply a home to my projects and writing.
 
