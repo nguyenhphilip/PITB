@@ -2,6 +2,8 @@
   {
     "listing": "/poems.html",
     "items": [
+      "/poems/11-12-22-spider/index.html",
+      "/poems/11-10-22-crevasses/index.html",
       "/poems/10-03-22-lifes-work/index.html",
       "/poems/10-03-22-questions/index.html",
       "/poems/09-29-22-sometimes/index.html",
@@ -86,6 +88,7 @@
   {
     "listing": "/posts.html",
     "items": [
+      "/posts/10-30-22-things-1/index.html",
       "/posts/22-18-10-the-lake/index.html",
       "/posts/22-09-02-dancing/index.html",
       "/posts/22-09-12-dear-change/index.html",
