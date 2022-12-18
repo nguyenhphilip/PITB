@@ -1,0 +1,28 @@
+---
+title: "Ordered Probit Regression"
+date: "12-17-2022"
+categories: [statistics, notes]
+title-block-banner: false
+---
+
+# Description
+
+- Given an ordered variable (e.g. a Likert scale item) with $K+1$ responses, the **ordered probit** models the relative probability of each response as $$\begin{gather}p(\text{response}=k \mid \{ \theta_k \}) = f(\theta_k) - f(\theta_{k-1})\end{gather}$$ where $f$ is a cumulative distribution function.
+- We assume that item responses are drawn from a latent distribution. This distribution is then divided into $K+1$ areas that represent the probability of obtaining a particular response by $K$ thresholds.
+- Fitting the model involves estimating the threshold values that govern the probability of each response.
+- Example: if we have $6$ possible responses on a survey question where the order matters ("Highly likely" = 6 > "Highly unlikely" = 1), then the relative probability of choosing "Highly likely" is $$\begin{gather}
+p(\text{response}=6 \mid \{ \theta_6 \}) = f(\theta_6) - f(\theta_{5}) \\
+ = f(\infty) - f(\theta_{5}) = 1 - f(\theta_5) 
+ \end{gather}$$
+
+- $f$ is usually a *cumulative standard normal distribution* due to its nice interprative properties with $\mu=0$ and $\sigma=1$.
+
+# Interpretation
+
+- Estimated are the threshold values that describe the probabiltiies of observing a particular ordered response
+- Assuming a standard normal distribution for the responses $\tilde{Y}$, beta coefficients correspond to changes in the **mean of the underlying response distribution** by a one unit increase in the predictor or regressor. 
+- So if $X_1$ corresponds to a categorical variable, $\beta_1=0.5$ corresponds to half of a standard deviation amount of change in the mean of the response variable $\tilde{Y}$, relative to the reference class (e.g. maladaptive versus competent)
+
+# sources
+- [Ordinal Regression Models in Psychology: A Tutorial](https://journals.sagepub.com/doi/full/10.1177/2515245918823199)
+- [Notes on the Bayesian cumulative probit](https://solomonkurz.netlify.app/post/2021-12-29-notes-on-the-bayesian-cumulative-probit/)

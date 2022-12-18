@@ -3,7 +3,7 @@ project:
   
 website:
   title: "Phil in the Blank"
-  description: "A science and stats blog"
+  description: ""
   sidebar:
     title: "Phil in the Blank"
     style: "floating"
@@ -16,10 +16,11 @@ website:
         file: poems.qmd
       - text: Projects
         file: projects.qmd
+      - text: Notes
+        file: notes.qmd
       - text: About
         file: index.qmd
       
-
   favicon: photos/favicon.ico
   twitter-card:
     creator: "@NguyenHPhil"
@@ -29,3 +30,5 @@ format:
   html:
     theme: ember.scss
     css: styles.css
+
+

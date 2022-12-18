@@ -69,6 +69,12 @@
     ]
   },
   {
+    "listing": "/notes.html",
+    "items": [
+      "/notes/ordered-probit/index.html"
+    ]
+  },
+  {
     "listing": "/projects.html",
     "items": [
       "/projects/POCS-MH-nets/index.html",

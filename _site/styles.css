@@ -36,6 +36,7 @@
 
 p.date {
   display: block !important;
+  color: slategray;
 }
 
 .quarto-secondary-nav-title {
@@ -47,6 +48,7 @@ p.date {
 
 .poem ul {
   list-style: none;
+  padding: 0;
 }
 
 * {
@@ -55,4 +57,12 @@ p.date {
 
 li {
   font-size: 1.00em;
+}
+
+div.listing-description {
+  font-size: 0.75em;
+}
+
+h3.no-anchor.listing-title {
+  font-size: 0.9em;
 }
