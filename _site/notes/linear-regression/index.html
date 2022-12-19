@@ -232,12 +232,12 @@ Y_i = \beta_0 + \beta_1 X_{1i} + ... + \beta_p X_{pi} + \epsilon_i
 </section>
 <section id="assumptions" class="level1">
 <h1>Assumptions</h1>
-<p>Most of the assumptions revolve around the residuals. Namely that:</p>
+<p>Most of the assumptions revolve around the residuals:</p>
 <ol type="1">
 <li>The residuals are normally distributed (<em>Normality assumption</em>) with a mean of <span class="math inline">\(0\)</span> and standard deviation of <span class="math inline">\(\sigma\)</span> (<em>Homoscedasticity assumption</em>), i.e.&nbsp;<span class="math inline">\(\epsilon_i \sim \text{Normal}(0, \sigma^2)\)</span>.</li>
 <li>The residuals should be independent, which is typically a function of good study design.</li>
+<li><em>Linearity</em>:</li>
 </ol>
-<p><em>Linearity</em>:</p>
 <blockquote class="blockquote">
 <p>The conditional mean of the errors is assumed to be zero for any given combination of values of the predictor variables. This implies that, for standard multiple regression models, the relationship between every independent variable <span class="math inline">\(X_i\)</span> and the population mean of the dependent variable <span class="math inline">\(Y\)</span>, denoted by <span class="math inline">\(\mu_y\)</span>, is assumed to be linear when the other variables are held constant. Furthermore, the relations between the various <span class="math inline">\(X_i\)</span> and <span class="math inline">\(\mu_y\)</span> are additive: thus, the relation of <span class="math inline">\(X_i\)</span> with <span class="math inline">\(\mu_y\)</span> is the same, regardless of the value of <span class="math inline">\(X_j\)</span> (<span class="math inline">\(j \neq i\)</span>).</p>
 </blockquote>
