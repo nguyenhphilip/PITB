@@ -71,6 +71,7 @@
   {
     "listing": "/notes.html",
     "items": [
+      "/notes/linear-regression/index.html",
       "/notes/ordered-probit/index.html"
     ]
   },

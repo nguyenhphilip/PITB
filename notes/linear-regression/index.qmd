@@ -1,0 +1,60 @@
+---
+title: "Linear Regression"
+date: "12-18-22"
+categories: [statistics, notes]
+title-block-banner: false
+---
+
+# Main
+
+Linear regression models the relationship between some outcome variable $Y_i$ based on a set of predictors $X_{ji}$ where $i$ indexes an individual case (e.g. a study subject) and $j \in \{1,2,..., p \}$ given $p$ predictors. This yields the equation
+
+$$
+Y_i = \beta_0 + \beta_1 X_{1i} + ... + \beta_p X_{pi} + \epsilon_i
+$$
+
+where $\epsilon_i$ is an error term for a particular case $i$. The error terms model the variance left unexplained by the model and are called *residuals*. The goal is to estimate the beta terms in order to find a best fitting line.
+
+The best fitting line is defined in many ways, but the most common involves minimizing the *least square criterion*. Minimizing the **least squares criterion** yields the beta values that minimize the ==residual sum of squares==, i.e. $$\text{RSS}=e_{1}^{2} + e_{2}^{2} + ... + e_{n}^{2}$$ where $e_i = y_i - \hat{y}_i$ is the $i$th residual. Minimizing the residual sum of squares is equivalent to maximizing the variance that the model explains.
+
+In the end what we have is the *estimated population regression line*, which predicts the average value of $Y$ given a particular value of $X$. For example, if we have a regression equation $${\text{weight}} = \beta_0 + \beta_1 \text{height}$$and we are given $\beta_0, \beta_1$, and $\text{height}=50$ inches, we can plug those values in and get the **average weight** of a person who is 50 inches tall.
+
+# Assumptions
+
+Most of the assumptions revolve around the residuals. Namely that:
+
+1) The residuals are normally distributed (*Normality assumption*) with a mean of $0$ and standard deviation of $\sigma$ (*Homoscedasticity assumption*), i.e. $\epsilon_i \sim \text{Normal}(0, \sigma^2)$.
+2) The residuals should be independent, which is typically a function of good study design.
+
+*Linearity*: 
+
+> The conditional mean of the errors is assumed to be zero for any given combination of values of the predictor variables. This implies that, for standard multiple regression models, the relationship between every independent variable $X_i$ and the population mean of the dependent variable $Y$, denoted by $\mu_y$, is assumed to be linear when the other variables are held constant. Furthermore, the relations between the various $X_i$ and $\mu_y$ are additive: thus, the relation of $X_i$ with $\mu_y$ is the same, regardless of the value of $X_j$ ($j \neq i$).
+
+This states that the relationship between the various predictors $X_j$ and the *conditional mean* ($\mathbb{E}[Y|X]$) is linear while the other variables are held constant, and additive. 
+
+## Common Misconceptions re: assumptions
+
+#### X and Y don't have to be normally distributed
+
+From [Ernst and Albers 2017](http://dx.doi.org/10.7717/peerj.3323):
+
+> Most commonly, researchers incorrectly assume that X, or both X and Y, should be normally distributed, rather than the errors of the model.
+
+They use the example of an independent [[t-test]]. Assume we are given two population distributions that are independent from each other (e.g. one distribution representing a treatment group, the other a control group), are normally distributed and have equal variance, and we want to compute a t-statistic. This can be done using a regression model where $X$ is a dummy variable that encodes each group, yielding a conditional mean for each group once the model is fit, $\mathbb{E}[Y \mid X]$. It's clear that $X$ is not normally distributed since it only takes on two values in this case:
+
+> This resulting 'conditional membership' distribution is nothing close to normal (as it takes on just two values), however no assumption of the general linear model is violated because ==the subpopulations of Y for each of the X values follow a normal distibution with equal variances.
+
+#### Non-linear relationships *can* be modeled using OLS regression
+
+The linearity assumption only deals with ==linearity in the parameters and the estimates== (e.g. $\beta_j$), but not necessarily in the variables. For example, polynomial regression models have polynomial variables like $X_{ji}$ and $X_{ji}^{2}$.
+
+# Uses
+
+Linear regression can answer questions like:
+
+1) Is there an association between $X$ and $Y$?
+2) How strong is the relationship?
+3) If $X$ is multiclass, which class is associated with $Y$, and how large are the effects?
+4) How accurately can we predict $Y$ from $X$?
+5) Is the relationship between $X$ and $Y$ linear?
+6) Is there an interaction effect between $X$ and $Y$?
