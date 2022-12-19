@@ -78,6 +78,7 @@
   {
     "listing": "/projects.html",
     "items": [
+      "/projects/resilience-imagen/index.html",
       "/projects/POCS-MH-nets/index.html",
       "/projects/Bayesian-PCA/index.html",
       "/projects/Character-Space/index.html",

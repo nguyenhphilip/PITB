@@ -1,0 +1,1953 @@
+---
+title: "Predicting mental health and substance use in adulthood from resilience in adolescence"
+subtitle: "Bayes. Mediation. Lots of data."
+tags: 
+  - resilience
+  - mental health
+  - substance use
+  - bayesian statistics
+date: 2022-12-19
+author: "Philip Nguyen"
+format:
+  html:
+    code-fold: true
+    extra_dependencies: ["amsmath"]
+toc: true
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      # fig.align = "center",
+                      fig.width = 8, 
+                      fig.height = 4, 
+                      dev = "png",
+                      cache = TRUE)
+```
+
+# Project Summary
+
+In this study I use data from the [IMAGEN Study](https://imagen-project.org) (initial n=2315) to determine if mental health and drug use in adulthood (\~age 23) can be predicted by resilience in early adolescence (\~age 14). Adolescents are classified into one of four groups following [Burt et al's](https://pubmed.ncbi.nlm.nih.gov/27079174) operationalization of resilience as the interaction between **competence** and **adversity**. In addition, I look at whether structural brain differences at age 14 in brain regions identified by Burt mediate any of the differences observed in mental health outcomes and alcohol use at age 23.
+
+To summarize, I find that there are significant differences in mental health outcomes and recent drug use at age 23 between the four groups. Additionally, the gray matter volume differences identified between the groups at age 14 did not mediate any of the differences in mental health or drug use. These results suggest that developmental features of early resilience such as social skills interact with adversity in a positive way and are predictive of numerous outcomes in adulthood. This corroborates with findings by [@roismanSalientEmergingDevelopmental2004] that suggest the importance of developmentally salient tasks in predicting adult success.
+
+# Introduction
+
+> **Resilience**: The capacity of a dynamic system to withstand or recover from significant challenges that threaten its stability, viability, or development.
+
+Resilience refers to the phenomenon of positive adaptation in the face of adverse life experiences [@mastenResilienceChildrenThreatened2011]. Individuals who have had adverse life experiences are at higher risk of developing problems with mental health and drug use [@fritzEmpiricalExaminationHow2020]. However the effects of adversity are varied. Some individuals have better outcomes than others despite experiencing similar levels of adversity. The study of resilience is thus concerned with understanding the factors and mechanisms that explain the variability of outcomes in people who have experienced significant adversity.
+
+In this study I follow up on results produced by [@burtStructuralBrainCorrelates2016] using data from the [IMAGEN Study](https://imagen-project.org). Burt et al. defined resilience in terms of the interaction between two binarized variables *competence* and *adversity* (details to follow further below). This yielded four groups into which participants were classified. Using this classification scheme, they discovered structural brain differences in four brain regions across the groups. One of these regions (right middle frontal gyrus) was found to be negatively correlated with a drinking composite score, suggesting that greater gray matter volume in this region may be protective of problematic alcohol use.
+
+The IMAGEN Study has since collected follow-up data at three subsequent time points. These data include various measures of mental health and drug use, among others. Here I use the same classification schema as Burt et al to assess whether these groups defined at age 14 are predictive of mental health and drug use behavior 9 years later. Additionally, I test whether or not these potential differences in outcomes are mediated by the structural brain differences reported by Burt et al. My apriori guesses (hypotheses) are that differences in mental health will be better predicted than differences in drug use, and that the brain regions identified by Burt et al will play no role in mediating these differences.
+
+# Methods
+
+###### (Load libraries, data, and define helper functions)
+
+```{r libraries, include=T, echo=T}
+library(tidyverse)
+library(datawizard)
+library(brms)
+library(vroom)
+library(corrr)
+library(gtsummary)
+library(marginaleffects)
+library(tidybayes)
+options(brms.backend = "cmdstanr")
+options(stan_model_args=list(stanc_options = list("O1")))
+options(mc.cores = 4)
+set.seed(5)
+```
+
+```{r load-data, include=T, echo=T}
+d <- vroom("~/Desktop/PhD/resilience-im-burt/resil_grouped_data.csv") |>
+  mutate(class = factor(class, 
+                        levels = c("competent",
+                                   "resilient",
+                                   "vulnerable",
+                                   "maladaptive")),
+         pds_cat = factor(pds_cat),
+         sex = factor(sex),
+         recruitment_centre = factor(recruitment_centre),
+         all_handedness = factor(all_handedness),
+         # mean center continuous covariates
+         pds_sum_c = center(pds_sum),
+         v_iq_c = center(v_iq),
+         p_iq_c = center(p_iq), 
+         age_years_bsl_c = center(age_years_bsl),
+         # for ordered probit
+         across(contains("alcohol"), ~ factor(.x, ordered = T, exclude = NA)),
+         across(contains("mj_hash_"), ~ factor(.x, ordered = T, exclude = NA)),
+         across(contains("cigs_"), ~ factor(.x, ordered = T, exclude = NA)),
+         across(`8a_bsl`:`21_bsl`, ~ factor(.x, ordered = T, exclude = NA)),
+         across(`8a_fu1`:`21_fu1`, ~ factor(.x, ordered = T, exclude = NA)),
+         across(`8a_fu2`:`21_fu2`, ~ factor(.x, ordered = T, exclude = NA)),
+         across(`8a_fu3`:`21_fu3`, ~ factor(.x, ordered = T, exclude = NA)),
+         sex = case_when(sex == 1 ~ "Male",
+                         sex == 2 ~ "Female"),
+         all_handedness = case_when(all_handedness == 0 ~ "Left",
+                                    all_handedness == 1 ~ "Right"),
+         # standardize sum score outcomes
+         audit_total_score_fu3 = standardize(audit_total_score_fu3),
+         cesd_c_sum_fu3 = standardize(cesd_c_sum_fu3),
+         dawba_sdq_c_sebdtot_fu3 = standardize(dawba_sdq_c_sebdtot_fu3),
+         externalizing_fu3 = standardize(externalizing_fu3),
+         internalizing_fu3 = standardize(internalizing_fu3),
+         pss_c_sum_fu3 = standardize(pss_c_sum_fu3),
+         rapi_c_sum_fu3 = standardize(rapi_c_sum_fu3)
+  )
+```
+
+```{r functions, include=T, echo=T}
+z_score <- function(x, miss_rmv = F){
+  (x - mean(x, na.rm = miss_rmv)) / sd(x, na.rm = miss_rmv)
+}
+
+pomp <- function(obs, min, max){
+  ((obs-min)/(max-min)) * 100
+  }
+
+contrast_plot <- function(model,
+                          contrast_type = "", 
+                          rope = NA,
+                          rope_pomp, 
+                          pomp = F, 
+                          pomp_min = NA, 
+                          pomp_max = NA, 
+                          scale = "",
+                          newdata = "mean",
+                          contrasts_df = F
+                          ){
+
+  # compute class contrasts and gather draws
+  contrasts_hdi <- model |>
+    comparisons(variables = list(class = "pairwise"),
+              # compute adjusted comparisons where covariates are held at their average value (cont)
+              newdata = newdata) |>
+    mutate(pomp_diff = pomp(comparison, pomp_min, pomp_max),
+           pomp.low = pomp(conf.low, pomp_min, pomp_max),
+           pomp.high = pomp(conf.high, pomp_min, pomp_max),
+           across(where(is.numeric), ~round(.x, 2))) |>
+    select(contrast, comparison, conf.low, conf.high, pomp_diff, pomp.low, pomp.high) |>
+    arrange(desc(comparison))
+  
+  contrast_draws <- model |>
+    comparisons(variables = list(class = "pairwise"),
+                newdata = newdata) |> 
+    posteriordraws()
+  
+  plot_raw <- contrast_draws |>
+    ggplot(aes(x = draw, 
+               y = fct_reorder(contrast, draw, mean),
+               fill = stat(abs(x) > rope))) +
+    stat_halfeye() +
+    labs(x = "Standardized mean difference", 
+         y = "", 
+         title = str_c("Difference of ", contrast_type, " in ", scale, " score")) +
+    geom_vline(xintercept = c(-rope, rope), linetype = "dashed") +
+    scale_fill_manual(values = c("gray80", "skyblue")) +
+    theme(legend.position="none")
+
+  if (pomp == T){
+    plot_pomp <- contrast_draws |>
+      mutate(pomp = pomp(draw, pomp_min, pomp_max)) |>
+      ggplot(aes(x = pomp, 
+                 y = fct_reorder(contrast, pomp, mean),
+                 fill = stat(abs(x) > rope_pomp))) +
+      stat_halfeye() +
+      labs(x = "Percent of maximum possible (POMP)", 
+           y = "", 
+           title = str_c("Difference of POMP in ", scale, " score")) +
+      geom_vline(xintercept = c(-rope_pomp, rope_pomp), linetype = "dashed") +
+      scale_fill_manual(values = c("gray80", "skyblue")) +
+      theme(legend.position="none")
+  } else {
+    plot_pomp = NULL
+  }
+  
+  if (contrasts_df == T) {
+      list(
+    contrasts_df = contrast_draws,
+    contrasts_hdi = contrasts_hdi,
+    plot_raw = plot_raw,
+    plot_pomp = plot_pomp
+    )
+  } else {
+    list(
+    contrasts_df = NULL,
+    contrasts_hdi = contrasts_hdi,
+    plot_raw = plot_raw,
+    plot_pomp = plot_pomp
+    )
+  }
+  
+}
+
+qi_table <- function(fit){
+  fit |>
+    as_draws_df() |>
+    select(contains("b_")) |>
+    pivot_longer(cols=everything()) |>
+    group_by(name) |>
+    tidybayes::mean_qi() |>
+    select(name, value, .lower, .upper) |>
+    mutate(across(where(is.numeric), ~round(., 2))) |>
+    rmarkdown::paged_table()
+}
+
+coef_plot <- function(fit, title){
+  fit |>
+    as_draws_df() |>
+    select(contains("b_")) |>
+    pivot_longer(cols=everything()) |>
+    ggplot(aes(y=name, x = value)) +
+    stat_halfeye() +
+    geom_vline(xintercept = 0, linetype = "dashed") +
+    labs(x = "Coefficient value", y = "", title = title)
+}
+```
+
+## Participants
+
+The IMAGEN dataset was obtained from eight sites in Europe: Berlin, Dresden, Dublin, Hamburg, London, Mannheim, Nottingham, and Paris. Adolescent participants completed a series of self-report and interview measures, in addition to structural MRI scans. Parent-reported data were also obtained for some measures. Data were collected at four time points: baseline, follow-up 1, follow-up 2, follow-up 3. Additional information on the sample and data acquisition can be found on the [IMAGEN website](http://imagen-project.org) and from [Schumann et al](https://www.nature.com/articles/mp20104).
+
+```{r demographics, echo = T}
+d |>
+  select(age_years_bsl,
+         sex,
+         recruitment_centre
+         ) |>
+  tbl_summary(by = recruitment_centre,
+              label = list(age_years_bsl = "Age (years)",
+                           sex = "Sex",
+                           recruitment_centre = "Study site"),
+              missing_text = "Missing", digits = everything() ~ 1) |>
+  modify_header(label ~ "Variable") |>
+  bold_labels() |>
+  modify_spanning_header("stat_1":"stat_8" ~ "**Study Site**") |>
+  modify_caption("**Table 1. Baseline Demographics Table**") |>
+  as_gt()
+```
+
+## Measures
+
+### Adversity
+
+Adversity is operationalized and drawn from the Life-Events Questionnaire, which uses 39 items to measure the lifetime occurrence of stressful life events across seven domains: family/parents, accident/illness, sexuality, autonomy, deviance, relocation, and distress. Additionally each item has a corresponding valence or perceived desirability of the event measured on a five-point Likert scale with responses: Very unhappy, Unhappy, Neutral, Happy, Very happy.
+
+```{r adversity}
+
+# labels for each item
+leq_labels <- vroom::vroom("~/Desktop/PhD/IMAGEN_phenotypic_data/leq_labels.csv") |>
+  filter(burt2016==TRUE)
+
+# load data
+leq <- vroom::vroom("~/Desktop/PhD/IMAGEN_phenotypic_data/Raw_data/BSL/IMAGEN-IMGN_LEQ_RC5-BASIC_DIGEST.csv") |>
+  mutate(`User code` = str_remove(string = `User code`, pattern = "-I")) |>
+  rename("id" = "User code") |>
+  mutate("id" = str_remove(id, "^0+"))
+
+# Select the LEQ items Burt et al (2016) use
+
+leq_burt <- leq |>
+  select(id, contains(leq_labels$shortname))
+
+# We want to sum up "ever" events ONLY IF the event was perceived as negative.
+
+num_neg_events <- leq_burt |>
+  # group questions together
+  pivot_longer(cols = -id,
+               names_to = c("title", "question", "kind"),
+               names_sep = "_"
+               ) |>
+  pivot_wider(names_from = c("kind"), values_from = "value") |>
+  # add life event only if it was perceived as negative
+  mutate(negative_ever = if_else(feel < 0, ever, 0)) |>
+  group_by(id) |>
+  nest() |>
+  mutate(leq_count = map_dbl(data, ~sum(.$negative_ever, na.rm = T))) |>
+  select(-data) |>
+  ungroup(id)
+
+# plot histogram
+
+num_neg_events |>
+  ggplot(aes(x = leq_count)) +
+  geom_histogram() +
+  geom_vline(xintercept = mean(num_neg_events$leq_count), color = 'red') +
+  labs(title = 'Distribution of negative life events experienced by baseline visit',
+       x = "Number of events")
+```
+
+### Competence
+
+Competence is operationalized as the sum of standardized scores across four domains:
+
+-   Rule-abiding conduct (40 items): 15 self- and parent-reported dichotomized DAWBA items assessing rule-breaking behavior in the past year as well as 5 self- and parent-reported SDQ items. (reverse-scored, once aggregated, such that higher scores represented greater rule-abiding conduct).
+
+```{r rule-abiding, include = F}
+dawba <- vroom("~/Desktop/PhD/IMAGEN_phenotypic_data/Raw_data/BSL/IMAGEN_dawba_BL.tsv", delim = "\t") |>
+  rename('id' = 'PSC2') |>
+  mutate("id" = str_remove(id, "^0+"))
+
+# select variables
+
+rule_abiding <- dawba |>
+  # select youth and parent rule-abiding measures
+  select(id,
+         # DAWBA rule-breaking
+         sk4a:sk4f,
+         sk5:sk6h,
+         p1k8a:p1k8f, 
+         p1k9:p1k10h,
+         # SDQ rule-breaking
+         stantrum, sobeys, sfights, slies, ssteals,
+         p1tantrum, p1obeys, p1fights, p1lies, p1steals) |>
+  mutate(
+    # Burt reverse scores these two items
+    sobeysr = 2 - sobeys,
+    p1obeysr = 2 - p1obeys
+  ) |>
+  select(-c(sobeys,p1obeys))
+
+# compute score
+rule_abiding <- rule_abiding |>
+  mutate(
+    # dichotomize self and parent dawba items. 
+    across(sk4a:p1k10h, ~ case_when(. > 0 ~ 1, . == 0 ~ 0)), 
+    # sum across youth and parent dawba items
+    cd_y = rowSums(across(sk4a:sk6h), na.rm = T),
+    cd_p = rowSums(across(p1k8a:p1k10h), na.rm = T),
+    # combine parent and youth counts
+    cd_either = cd_y + cd_p,
+    # mean across youth and parent SDQ items
+    sdq_y = rowMeans(across(c(stantrum, sobeysr, sfights, slies, ssteals)), na.rm = T),
+    sdq_p = rowMeans(across(c(p1tantrum, p1obeysr, p1fights, p1lies, p1steals)), na.rm = T),
+    # combine SDQ across informant
+    sdq_conduct = rowMeans(across(sdq_y:sdq_p)),
+    # normalize DAWBA and SDQ
+    z_cd = z_score(cd_either, T),
+    z_sdq = z_score(sdq_conduct, T),
+    # truncate
+    t_z_cd = if_else(z_cd > 3, 3, z_cd),
+    t_z_sdq = if_else(z_sdq > 3, 3, z_sdq),
+    # merge across SDQ and DAWBA
+    conduct_probs = rowMeans(across(t_z_cd:t_z_sdq)),
+    # reverse score so that higher scores represent greater rule-abiding conduct (more rule-following). 
+    t_z_conduct = conduct_probs * -1,
+    # dichotomize
+    conduct_di = t_z_conduct >= -0.50
+    )
+
+rule_abiding |>
+  ggplot(aes(x = t_z_conduct)) +
+  geom_histogram() +
+  labs(title = "Standardized distribution of rule-abiding conduct scores",
+       x = "z-score")
+
+```
+
+-   Social competence (41 items). 10 self- and 11 parent-reported DAWBA items representing prosocial behavior (each scored on a 0-2 scale) as well as 10 self- and 10 parent-reported SDQ items representing the Peer Problems (reversed) and Prosocial Behavior subscales.
+
+```{r social-comp, include = F, echo = F}
+
+# select items
+social <- dawba |>
+  select(id,
+         # SDQ
+         sloner, sfriend, spopular, sbullied, soldbest, sconsid, sshares, scaring, skind, shelpout,
+         p1loner, p1friend, p1popular, p1bullied, p1oldbest, p1consid, p1shares, p1caring, p1kind,
+         p1helpout,
+         # Dawba
+         sn1a, sn1b, sn1c, sn1e, sn1f, sn1g, sn2b, sn2c, sn2h, sn2j, 
+         p1n1a, p1n1d, p1n1e, p1n1f, p1n1g, p1n1i, p1n1k, p1n2a, p1n2b, p1n2h, p1n2k,
+         speer, p1peer, sprosoc, p1prosoc
+         ) |>
+  mutate(
+    # reverse Peer problems
+    slonerr = 2 - sloner,
+    sbulliedr = 2 - sbullied,
+    soldbestr = 2 - soldbest,
+    sfriendr = 2 - sfriend,
+    spopularr = 2 - spopular,
+    p1lonerr = 2 - p1loner,
+    p1bulliedr = 2 - p1bullied,
+    p1oldbestr = 2 - p1oldbest,
+    p1friendr = 2 - p1friend,
+    p1popularr = 2 - p1popular
+  )
+
+# compute score
+
+social <- social |>
+  mutate("id" = str_remove(id, "^0+"),
+         # z-score SDQ peer problems and SDQ prosocial behavior
+         z_speer = z_score(speer, T),
+         z_p1peer = z_score(p1peer, T),
+         z_sprosoc = z_score(sprosoc, T),
+         z_p1prosoc = z_score(p1prosoc, T),
+         
+         z_peer = rowMeans(across(z_speer:z_p1peer)),
+         z_prosoc = rowMeans(across(z_sprosoc:z_p1prosoc)),
+         
+         t_z_peer = if_else(z_peer >= 3, 3, z_peer),
+         t_z_prosoc = if_else(z_prosoc <= -3, -3, z_prosoc),
+         
+         # reverse score peer problems
+         t_z_peer_r = t_z_peer * -1,
+         
+         # z-score DAWBA prosocial behavior
+         pro_y = rowSums(across(sn1a:sn2j), na.rm=T),
+         pro_p = rowSums(across(p1n1a:p1n2k), na.rm=T),
+         
+         z_pro_y = z_score(pro_y, T),
+         z_pro_p = z_score(pro_p, T),
+         z_pro = rowMeans(across(z_pro_y:z_pro_p)),
+         
+         t_z_social_daw = if_else(z_pro <= -3, -3, z_pro),
+         t_social_sdq = rowMeans(across(t_z_peer_r:t_z_prosoc)),
+         
+         t_z_social = rowMeans(across(t_social_sdq:t_z_social_daw)),
+         social_di = t_z_social >= -0.50
+         )
+
+social |>
+  ggplot(aes(x = t_z_social)) +
+  geom_histogram() +
+  labs(title = "Standardized distribution of social competence scores",
+       x = "z-score")
+```
+
+-   Academic competence (4 items): 2 parent-reported DAWBA items (0-2 scale: "good at school work"; "general reasoning and school work"), 1 self-reported DAWBA item (0-2 scale: "good at school work") and 1 ESPAD item (8-point scale representing 'A' to 'C-').
+
+```{r academic-comp, include = F, echo = F}
+# select variables
+espad <- vroom("~/Desktop/PhD/IMAGEN_phenotypic_data/Raw_data/BSL/IMAGEN-IMGN_ESPAD_CHILD_RC5-IMAGEN_DIGEST.csv")
+
+academic <- dawba |>
+  select(id, p1r1, p1n2g, sn2k) |>
+  left_join(
+    espad |> 
+      select("User code", "5") |> 
+      rename("id" = "User code", "espad_5" = "5") |> 
+      mutate(id = as.character(id)),
+    by = "id") |>
+  # reverse p1r1 and grades
+  mutate(p1r1r = case_when(p1r1 == 0 ~ 2,
+                           p1r1 == 1 ~ 1,
+                           p1r1 == 2 ~ 0),
+         espad_5r = 9 - espad_5)
+
+# compute scores
+academic <- academic |>
+  mutate(
+  # z-score parent var
+    z_p1r1r = z_score(p1r1r, T),
+    z_p1n2g = z_score(p1n2g, T),
+    # z-score self-report variables
+    z_sn2k = z_score(sn2k, T),
+    # z-score grade
+    z_espad_5r = z_score(espad_5r, T),
+    # combine z-scored parent variables
+    z_acadp = rowMeans(across(z_p1r1r:z_p1n2g)),
+    # combine z-scored self-report variables
+    z_acads = rowMeans(across(z_sn2k:z_espad_5r)),
+    # aggregate across informant
+    zacademic = rowMeans(across(z_acadp:z_acads)),
+    t_z_academic = if_else(zacademic < -3.0, -3, zacademic),
+    # dichothomize
+    academic_di = t_z_academic >= -0.50
+  )
+
+academic |>
+  ggplot(aes(x = t_z_academic)) +
+  geom_histogram() +
+  labs(title = "Standardized distribution of academic competence scores",
+       x = "z-score")
+```
+
+-   Emotional health (10 items): 5 self- and 5 parent-reported (all reversed) SDQ Emotional Symptoms items.
+
+```{r emohealth, include = F, echo = F}
+# select variables
+emotional <- dawba |> 
+  select(id,
+         ssomatic, sworries, sunhappy, sclingy, safraid,
+         p1somatic, p1worries, p1unhappy, p1clingy, p1afraid,
+         semotion, p1emotion) |>
+  # compute score
+  mutate(z_semotion = z_score(semotion, T),
+         z_pemotion = z_score(p1emotion, T),
+         # reflect z scores
+         z_semotion_r = z_semotion * -1,
+         z_p1emotion_r = z_pemotion * -1,
+         z_emohealth = rowMeans(across(z_semotion_r:z_p1emotion_r)),
+         t_z_emohealth = if_else(z_emohealth < -3.0, -3.0, z_emohealth),
+         # Burt has > here rather than >= ... is that a typo or intentional ?
+         emotional_di = t_z_emohealth > -0.5
+         )
+
+emotional |>
+  ggplot(aes(x = t_z_emohealth)) +
+  geom_histogram() +
+  labs(title = "Standardized distribution of emotional health scores",
+       x = "z-score")
+```
+
+```{r z.histograms}
+grouped <- rule_abiding %>%
+  left_join(num_neg_events, by = "id") %>%
+  left_join(social, by = "id")  %>%
+  left_join(academic, by = "id")  %>%
+  left_join(emotional, by = "id")  %>%
+  left_join(dawba |> select(id, sh1:sdepband, sg2:sgenaband), by = "id") %>%
+  mutate(
+    competence_score = rowMeans(select(., t_z_social, t_z_conduct, t_z_academic, t_z_emohealth), na.rm = T),
+    competence_all = conduct_di & social_di & academic_di & emotional_di,
+    competence_no_emo = conduct_di & social_di & academic_di,
+    adversity = leq_count >= 6,
+    class = case_when(
+      !adversity & !competence_all ~ "vulnerable",
+      adversity & !competence_all ~ "maladaptive",
+      !adversity & competence_all ~ "competent",
+      adversity & competence_all ~ "resilient"
+           ),
+    class_no_emo = case_when(
+      !adversity & !competence_no_emo ~ "vulnerable",
+      adversity & !competence_no_emo ~ "maladaptive",
+      !adversity & competence_no_emo ~ "competent",
+      adversity & competence_no_emo ~ "resilient")) %>%
+  select(id, leq_count, "adversity", contains("competence"), class, class_no_emo, t_z_social, t_z_conduct, t_z_academic, t_z_emohealth)
+
+grouped |>  
+  select(id, t_z_conduct, t_z_social, t_z_academic, t_z_emohealth) |>
+  pivot_longer(-id) |>
+  ggplot(aes(x = value)) +
+  geom_histogram() +
+  facet_wrap(~name)
+```
+
+Standardized scores were calculated by aggregating items within each domain and computing a z-score. Scores beyond 3 standard deviations from the mean were truncated. Z-scores were then summed across domain, yielding a final competence score.
+
+```{r competence}
+grouped |>  
+  ggplot(aes(x = competence_score)) +
+  geom_histogram() +
+  labs(x = "z-score",
+       title = "Competence Score")
+```
+
+### Group Classification
+
+Following Burt et al, participants are classified into one of four groups based on where they fall along the competence and adversity measures.
+
+First, competence was binarized based on whether participants had a z-score higher or lower than $-0.5$ on all four competence domains. According to [@burtStructuralBrainCorrelates2016], this represents "a stringent definition of 'doing well' as it encompasses not only meeting external developmental task criteria [@roismanSalientEmergingDevelopmental2004] but also non-elevated emotional symptoms."
+
+Second, adversity was also binarized based on a cutoff value of $1$ standard deviation on number of negative lifetime events. This represents 6 or more events.
+
+Crossing these binarized variables yielded four possible group classifications:
+
+-   (C/a): High competence, low adversity (sometimes termed 'competent')
+
+-   (C/A) High competence, high adversity ('resilient')
+
+-   (c/a) Low competence, low adversity ('vulnerable')
+
+-   (c/A) Low competence, high adversity ('maladaptive')
+
+Participants were required to have non-missing data for at least one competence indicator to receive a competence composite in some form, yielding $n=2107$ classified subjects.
+
+```{r resilience-groups}
+#| label: tbl-groups
+#| tbl-cap: Competence/Adversity Groupings
+
+d |> 
+  select(class) |>
+  tbl_summary(missing = "ifany") |>
+  modify_header(label = "") |>
+  bold_labels() |>
+  as_gt()
+```
+
+### Outcomes
+
+While competence/adversity groupings were constructed at baseline (around age 14), the outcome measures of this study were obtained at the third follow-up point of the study (around age 23).
+
+#### SDQ: Strength and Difficulties Questionnaire
+
+```{r}
+#| column: margin
+#| label: tds-dist-margin
+#| fig-cap: "Histogram of Standardized Total Difficulty Score."
+
+d |>
+  ggplot(aes(x = dawba_sdq_c_sebdtot_fu3)) +
+  geom_histogram() +
+  labs(x = "z-score")
+```
+
+> The [SDQ](https://sdqscore.org) ([Goodman, 1997](https://sdqscore.org)) is a 25-item questionnaire completed by both adolescents and parents in the current study. It is divided into five subscales: emotional symptoms, conduct problems, hyperactivity/inattention, peer relationship problems, and prosocial behaviors. Each item is scored on a three-point scale (0 = not true, 1 = somewhat true, 2 = certainly true).
+
+From the SDQ I use the Total Difficulty score as a measure of mental health. The total problem score is generated by summing the scores for all the scales except the prosocial scale. The resulting score ranges from $0–40$. Each scale has five items, and there are four scales. The total score was not calculated if one of the component scores was missing.
+
+Additionally, I decomposed the Total Difficulty Score into an Internalizing score and an Externalizing score to examine mental health problems in a more specific way. This aligns with how psychopathology is widely conceptualized such as in the [ACEBA](https://aseba.org). Internalizing simply corresponds to the sum of items across the Emotional Symptoms scale and the Peer Relationship Problems scale in the SDQ. Externalizing corresponds to the sum of items across the Conduct Problems scale and the Hyperactivity/Inattention scale in the SDQ.
+
+#### CESD: Center for Epidemiological Studies Depression Scale
+
+```{r}
+#| column: margin
+#| label: cesd-dist-margin
+#| fig-cap: "Histogram of Standardized CESD Sum Score."
+
+d |>
+  ggplot(aes(x = cesd_c_sum_fu3)) +
+  geom_histogram() +
+  labs(x = "z-score")
+
+```
+
+> The [CESD](https://arc.psych.wisc.edu/self-report/center-for-epidemiologic-studies-depression-scale-cesd/) consists of twenty items that are rated on a four-poing likert scale (from 1: rarely or none of the time to 4: most or all of the time). Scores range from zero to sixty. Higher scores indicated a higher frequency of depressive symptoms during the last week.
+
+Since some of the items from the SDQ are used in constructing competence, I use the sum score from the CESD as another measure of mental health to account for the expected differences in the Total Difficulty score.
+
+#### PSS: Perceived Stress Scale
+
+```{r}
+#| column: margin
+#| label: pss-dist-margin
+#| fig-cap: "Histogram of Standardized PSS Sum Score."
+
+d |>
+  ggplot(aes(x = pss_c_sum_fu3)) +
+  geom_histogram() +
+  labs(x = "z-score")
+
+```
+
+> The [Perceived Stress Scale](https://arc.psych.wisc.edu/self-report/perceived-stress-scale-pss/) is a 10-item self report questionnaire that measures persons' evaluation of the stressfulness of the situations in the past month of their lives. There is also a 4-item version. Scores can range from 0 to 40, with higher scores indicating greater stress.
+
+#### AUDIT: Alcohol Use Disorder Identification Test
+
+```{r}
+#| column: margin
+#| label: aud-dist-margin
+#| fig-cap: "Histogram of Standardized AUDIT Sum Score."
+
+d |>
+  ggplot(aes(x = audit_total_score_fu3)) +
+  geom_histogram() +
+  labs(x = "z-score")
+
+```
+
+> The [AUDIT](https://auditscreen.org/about/scoring-audit/) has **10** questions and the possible responses to each question are scored **0, 1, 2, 3 or 4**, with the exception of questions **9** and **10** which have possible responses of **0, 2** and **4**.
+>
+> **The range of possible scores is from** **0 to 40** where 0 indicates an abstainer who has never had any problems from alcohol. A score of **1 to 7** suggests low-risk consumption according to World Health Organization (WHO) guidelines. Scores from **8 to 14** suggest hazardous or harmful alcohol consumption and a score of **15 or more** indicates the likelihood of alcohol dependence (moderate-severe alcohol use disorder).
+
+#### RAPI: Rutgers Alcohol Problem Index
+
+```{r}
+#| column: margin
+#| label: rap-dist-margin
+#| fig-cap: "Histogram of Standardized RAPI Sum Score."
+
+d |>
+  ggplot(aes(x = rapi_c_sum_fu3)) +
+  geom_histogram() +
+  labs(x = "z-score")
+
+```
+
+> The [RAPI](https://arc.psych.wisc.edu/self-report/rutgers-alcohol-problems-index-rapi/) is a 23-item self-administered screening tool for assessing adolescent problem drinking. It was developed in order to create a conceptually sound, unidimensional, relatively brief, and easily administered instrument to assess problem drinking in adolescence. The advantages of this screening tool lie in its ease of administration and its standardization, which make it possible to compare problem drinking scores across groups.
+
+#### ESPAD: European School Survey Project on Alcohol and Drugs
+
+> The [ESPAD](http://espad.org) (Hibell et al., 1997) was administered using the computerized assessment platform Psytools (Delosis, London, UK). Psytools presented questionnaire items and response alternatives on a computer screen, with jump rules to skip inapplicable questions for the sake of brevity. As the Psytools program was run at the participant's home without direct supervision by the research team, the reliability of individual data was checked in a two-stage procedure. Before every task, adolescents were asked to report on the current testing context including questions about their attentional focus and the confidentiality of the setting. Automated flags highlighted potentially problematic testing situations and were followed up by research assistants in confidential face-to-face sessions. Final reliability ratings were assigned which led to exclusion of the data in certain cases. Specifically, exclusion criteria for substance use measures included an indication that the participant was in a hurry, somebody was watching, or an indication of having known of or taken the sham drug Relevin.
+
+To assess cigarette and marijuana/hash use, I gather two variables from the ESPAD that correspond to frequency of cigarette and marijuana/hash use within the past 30 days. Each item has seven response categories:
+
+```{r}
+#| column: margin
+#| label: cig-dist-margin
+#| fig-cap: "Histogram of responses to Cigarette Use in past 30 days"
+
+d |>
+  filter(!is.na(cigs_frequency_past_30_days_fu3)) |>
+  ggplot(aes(x = cigs_frequency_past_30_days_fu3)) +
+  stat_count() +
+  labs(x = "response")
+
+```
+
+-   How frequently have you smoked cigarettes during the LAST 30 DAYS?
+
+    -   0 - "Not at all"
+
+    -   1 - "Less than one cigarette a week"
+
+    -   2 - "Less than one cigarette per day"
+
+    -   3 - "1-5 cigarettes per day"
+
+    -   4 - "6-10 cigarettes per day"
+
+    -   5 - "11-20 cigarettes per day"
+
+    -   6 - "More than 20 cigarettes per day"
+
+```{r}
+#| column: margin
+#| label: mj-dist-margin
+#| fig-cap: "Histogram of responses to Marjiana/Hash Use in past 30 days"
+
+d |>
+  filter(!is.na(mj_hash_past_30_days_fu3)) |>
+  ggplot(aes(x = mj_hash_past_30_days_fu3)) +
+  stat_count() +
+  labs(x = "response")
+
+```
+
+-   On how many occasions OVER THE LAST 30 DAYS have you used marijuana (grass, pot) or hashish (hash, hash oil)?
+
+    -   0 - "0"
+
+    -   1 - "1-2"
+
+    -   2 - "3-5"
+
+    -   3 - "6-9"
+
+    -   4 - "10-19"
+
+    -   5 - "20-39"
+
+    -   6 - "40 or more"
+
+# Analysis
+
+All analyses were conducted in R (version 4.2.1) and primarily employ a Bayesian framework. The benefits of using a Bayesian approach have been highlighted extensively elsewhere [@dienesBayesianOrthodoxStatistics2011; @kruschkeBayesianEstimationSupersedes2013; @vandeschootGentleIntroductionBayesian2014]. Prior to model fitting, continuous covariates were mean-centered, continuous\* outcomes were standardized, and categorical variables were left as is. Missing values were dropped during model fitting (case-dropping).
+
+::: column-margin
+\*Sum scores are technically not continuous, but are often treated as such. I will follow suit for ease and simplicity.
+:::
+
+## Predicting Future MH and Drug Use
+
+For predicting mental health and drug use in adulthood, I use seven outcomes:
+
+-   Total Difficulties Score (TDS): a general measure of mental health
+-   CESD Sum Score (CESD): a measure of depression symptoms in the past week
+-   Perceived Stress Sum Score (PSS): a measure of general stress
+-   AUDIT Total Score (AUD): a composite score for problematic drinking
+-   RAPI Sum Score (RAP): a measure of problemtic drinking
+-   (MJH) Frequency of marijuana/hash use in the past 30 days
+-   (CIG) Frequency of cigarette use in the past 30 days
+
+Each outcome is regressed onto `class` (the competence/adversity groupings), in addition to a set of covariates to statistically control for possible confounding effects. The set of covariates correspond to measurements at baseline. The included covariates are:
+
+-   sex
+-   study site
+-   puberty score
+-   verbal IQ
+-   performance IQ
+-   age
+-   handedness
+
+To account for the effect of outliers without excluding them entirely, I use a Student-t distribution as the likelihood (see [Robust linear regression](https://baezortega.github.io/2018/08/06/robust_regression/)) for modeling first five outcomes: TDS, CESD, PSS, AUD, and RAP. As noted by [@mcelreath2020], the model will still produce similar coefficient estimates to a regression model using a Gaussian likelihood, but is more robust to the presence of outliers. For MJH and CIG, I use the [ordered probit](https://solomonkurz.netlify.app/blog/2021-12-29-notes-on-the-bayesian-cumulative-probit/) to properly model each item as Likert-scale responses.
+
+Priors for each model are weakly informative, thus allowing the data "to speak" and inform coefficient estimates. In general, for the first five outcomes, the mathematical description looks like
+
+$$
+\begin{gather}
+\text{outcome}_i \sim \text{Student-t}(\nu, \mu_i, \sigma^{2}) \\
+\mu_i = \beta_{0} + \sum_{j=1}^{p}\beta_{j}X_{j} \\
+\beta_{0}, \beta_{j} \sim \text{Normal}(0,10) \\
+\sigma \sim \text{Exponential}(0.5)\\
+\nu \sim \text{gamma}(2, 0.1) \\
+\end{gather}
+$$where $i$ indexes each participant. This also allows for Bayesian hypothesis testing, which will be detailed in each analysis section.
+
+For the ordered probit models, the mathematical description is slightly different. We instead have
+
+$$
+\begin{gather}
+p(\text{response} = k \mid \{\tau_k\}, \mu_i) = \Phi(\tau_{k} - \mu_i) - \Phi(\tau_{k-1} - \mu_i) \\
+\mu_i = \sum_{j=1}^{p}\beta_{j}X_{j} \\
+\tau_{0-6} \sim  \text{Normal}(0, 3)\\
+\beta_{j} \sim \text{Normal}(0,10)
+\end{gather}
+$$where we have $k+1$ possible responses to an item (e.g. $k=6$ "How frequently have you smoked cigarettes during the last 30 days?"). $\Phi$ denotes the cumulative distribution function for a standard normal distribution (mean: $0$, sd: $1$), and $\tau_{0-6}$ represents the threshold values that divide the standard normal distribution into regions that correspond to the probability of each response$k$. More on the ordered probit model is discussed in [@bürkner2019] and [@mcelreath2020].
+
+For each sum score outcome, I will 1) fit the model 2) display a table containing the 95% CI and posterior point estimate for each coefficient 3) plot the posterior distribution of coefficient estimates, and 4) plot a contrast plot between each competence/adversity group, which represents the standardized difference in means between each group. For the ordinal variables (frequency of cigarette and mj/hash use) I include 1-3 but no contrast plot.
+
+Okay, let's get modeling!
+
+*A preview of the data I used for analysis*.
+
+```{r read-data, echo = T, include = T}
+d |> 
+  select(id, class,
+         sex, recruitment_centre, all_handedness,
+         pds_sum_c, v_iq_c, p_iq_c, age_years_bsl_c,
+         audit_total_score_fu3,
+         dawba_sdq_c_sebdtot_fu3,
+         externalizing_fu3,
+         internalizing_fu3,
+         pss_c_sum_fu3,
+         rapi_c_sum_fu3,
+         cigs_frequency_past_30_days_fu3,
+         mj_hash_past_30_days_fu3
+         ) |>
+  head() |>
+  rmarkdown::paged_table()
+```
+
+### Total Difficulty Score
+
+##### 1) Fit
+
+```{r tds-model, warning=F, message=F, include=T, echo=T}
+m_tds <- brm(
+    formula = dawba_sdq_c_sebdtot_fu3 ~ 1 + class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness,
+    prior = c(
+      prior(normal(0, 10), class = Intercept),
+      prior(normal(0, 10), class = b),
+      prior(gamma(2, 0.1), class = nu),
+      prior(exponential(0.5), class = sigma)
+    ),
+    sample_prior = "yes",
+    data = d,
+    family = student,
+    iter = 2000,
+    warmup = 500,
+    chains = 4, 
+    seed = 5,
+    # file_refit = "on_change",
+    file = "~/Desktop/PhD/resilience-im-burt/brms-fits/m2_tds_student_cov"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r tds-coef, include=T, echo=T}
+
+qi_table(m_tds)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r tds-dist, include=T, echo=T}
+#| label: tds-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_tds, "TDS")
+```
+
+##### 4) Contrast plot
+
+```{r tds-contrast, include=T, echo=T}
+
+tds_contrast <- contrast_plot(
+  model = m_tds,
+  contrast_type = "mean",
+  rope = 0,
+  pomp_min = 0, 
+  pomp_max = 40, 
+  rope_pomp = 2.5, 
+  pomp = F,
+  scale = "TDS")
+
+tds_contrast$plot_raw
+```
+
+#### Decomposing TDS
+
+##### Internalizing
+
+##### 1) Fit
+
+```{r int-model, warning=F, message=F, include=T, echo=T}
+m_int <- brm(
+    formula = internalizing_fu3 ~ 1 + class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness,
+    prior = c(
+      prior(normal(0, 10), class = Intercept),
+      prior(normal(0, 10), class = b),
+      prior(gamma(2, 0.1), class = nu),
+      prior(exponential(0.5), class = sigma)
+    ),
+    sample_prior = "yes",
+    data = d,
+    family = student,
+    iter = 2000,
+    warmup = 500,
+    chains = 4, 
+    seed = 5,
+    # file_refit = "on_change",
+    file = "~/Desktop/PhD/resilience-im-burt/brms-fits/m2_internalizing"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r int-coef, include=T, echo=T}
+
+qi_table(m_int)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r int-dist, include=T, echo=T}
+#| label: int-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_int, "Internalizing score")
+```
+
+##### 4) Contrast plot
+
+```{r int-contrast, include=T, echo=T}
+
+int_contrast <- contrast_plot(
+  model = m_int,
+  contrast_type = "mean",
+  rope = 0,
+  pomp = F,
+  scale = "Internalizing")
+
+int_contrast$plot_raw
+```
+
+##### Externalizing
+
+##### 1) Fit
+
+```{r ext-model, warning=F, message=F, include=T, echo=T}
+m_ext <- brm(
+    formula = externalizing_fu3 ~ 1 + class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness,
+    prior = c(
+      prior(normal(0, 10), class = Intercept),
+      prior(normal(0, 10), class = b),
+      prior(gamma(2, 0.1), class = nu),
+      prior(exponential(0.5), class = sigma)
+    ),
+    sample_prior = "yes",
+    data = d,
+    family = student,
+    iter = 2000,
+    warmup = 500,
+    chains = 4, 
+    seed = 5,
+    # file_refit = "on_change",
+    file = "~/Desktop/PhD/resilience-im-burt/brms-fits/m2_externalizing"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r ext-coef, include=T, echo=T}
+
+qi_table(m_ext)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r ext-dist, include=T, echo=T}
+#| label: ext-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_ext, "Externalizing")
+```
+
+##### 4) Contrast plot
+
+```{r ext-contrast, include=T, echo=T}
+
+ext_contrast <- contrast_plot(
+  model = m_ext,
+  contrast_type = "mean",
+  rope = 0,
+  pomp_min = 0, 
+  pomp_max = 40, 
+  rope_pomp = 2.5, 
+  pomp = F,
+  scale = "Externalizing")
+
+ext_contrast$plot_raw
+```
+
+### CESD
+
+##### 1) Fit
+
+```{r cesd-fit, message=F, warning=F, include=T, echo=T}
+m_cesd <- brm(
+    formula = cesd_c_sum_fu3 ~ 1 + class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre +
+  all_handedness,
+    data = d,
+    prior = c(
+      prior(student_t(3, 5, 4.4), class = Intercept),
+      prior(normal(0, 10), class = b),
+      prior(gamma(2, 0.1), class = nu),
+      prior(exponential(0.5), class = sigma)
+    ),
+  family = student,
+  iter = 2000,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  sample_prior = "yes",
+  # file_refit = "on_change",
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/m2_cesd_student"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r cesd-coef, include=T, echo=T}
+
+qi_table(m_cesd)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r cesd-dist, include=T, echo=T}
+#| label: cesd-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_cesd, "CESD")
+```
+
+##### 4) Contrast plot
+
+```{r cesd-contrast, include=T, echo=T}
+
+cesd_contrast <- contrast_plot(
+  model = m_int,
+  contrast_type = "mean",
+  rope = 0,
+  pomp = F,
+  scale = "CESD")
+
+cesd_contrast$plot_raw
+```
+
+### AUDIT
+
+##### 1) Fit
+
+```{r audit, message=F, warning=F, include=T, echo=T}
+m_audit_sum <- brm(
+  audit_total_score_fu3 ~ 1 + class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre +
+    all_handedness,
+  data = d,
+  family = student,
+  prior = c(
+    prior(student_t(3, 5, 4.4), class = Intercept),
+    prior(normal(0, 5), class = b),
+    prior(gamma(2, 0.1), class = nu),
+    prior(exponential(0.5), class = sigma)
+    ),
+  iter = 2000,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  sample_prior = "yes",
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/m2_audit_total_cov"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r aud-coef, include=T, echo=T}
+
+qi_table(m_audit_sum)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r aud-dist, include=T, echo=T}
+#| label: aud-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_audit_sum, "AUDIT")
+```
+
+##### 4) Contrast plot
+
+```{r aud-contrast, include=T, echo=T}
+
+aud_contrast <- contrast_plot(
+  model = m_audit_sum,
+  contrast_type = "mean",
+  rope = 0,
+  pomp_min = 0, 
+  pomp_max = 40, 
+  rope_pomp = 2.5, 
+  pomp = F,
+  scale = "AUDIT")
+
+aud_contrast$plot_raw
+```
+
+### RAPI
+
+##### 1) Fit
+
+```{r rapi, message=F, warning=F, include=T, echo=T}
+m_rapi <- brm(
+  rapi_c_sum_fu3 ~ 1 + class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre +
+    all_handedness,
+  data = d,
+  family = student,
+  prior = c(
+    prior(student_t(3, 5, 4.4), class = Intercept),
+    prior(normal(0, 5), class = b),
+    prior(gamma(2, 0.1), class = nu),
+    prior(exponential(0.5), class = sigma)
+    ),
+  iter = 2000,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  # file_refit = "on_change",
+  sample_prior = "yes",
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/m2_rapi_cov"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r rap-coef, include=T, echo=T}
+
+qi_table(m_rapi)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r rap-dist, include=T, echo=T}
+#| label: rap-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_rapi, "RAPI")
+```
+
+##### 4) Contrast plot
+
+```{r rapi-contrast, include=T, echo=T}
+
+rapi_contrast <- contrast_plot(
+  model = m_rapi,
+  contrast_type = "mean",
+  rope = 0,
+  pomp = F,
+  scale = "RAPI")
+
+rapi_contrast$plot_raw
+```
+
+### PSS
+
+##### 1) Fit
+
+```{r pss, message=F, warning=F, include=T, echo=T}
+m_pss <- brm(
+  pss_c_sum_fu3 ~ 1 + class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre +
+    all_handedness,
+  data = d,
+  family = student,
+  prior = c(
+    prior(student_t(3, 5, 4.4), class = Intercept),
+    prior(normal(0, 10), class = b),
+    prior(gamma(2, 0.1), class = nu),
+    prior(exponential(0.5), class = sigma)
+    ),
+  iter = 2000,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  # file_refit = "on_change",
+  sample_prior = "yes",
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/m2_pss_cov"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r pss-coef, include=T, echo=T}
+
+qi_table(m_pss)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r pss-dist, include=T, echo=T}
+#| label: pss-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_ext, "PSS")
+```
+
+##### 4) Contrast plot
+
+```{r pss-contrast, include=T, echo=T}
+
+pss_contrast <- contrast_plot(
+  model = m_pss,
+  contrast_type = "mean",
+  rope = 0,
+  pomp = F,
+  scale = "PSS")
+
+pss_contrast$plot_raw
+```
+
+### Cigarette Use
+
+##### 1) Fit
+
+```{r cigarette, message=F, warning=F, include=T, echo=T}
+m_cig <- brm(
+  formula = cigs_frequency_past_30_days_fu3 ~ 1 + class + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness,
+  data = d,
+  family = cumulative(probit),
+  prior = c(
+    prior(normal(0, 2), class = Intercept),
+    prior(normal(0, 1), class = b)
+    ),
+  warmup = 500,
+  iter = 3000,
+  chains = 4, 
+  seed = 5,
+  init = 0.2,
+  control = list(adapt_delta = .99),
+  sample_prior = "yes",
+  # file_refit = "on_change",
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/b2_cig_freq"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r cig-coef, include=T, echo=T}
+
+qi_table(m_cig)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r cig-dist, include=T, echo=T}
+#| label: cig-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_cig, "Cigarette Frequency")
+```
+
+#### 4) Contrast plot
+
+##### On the latent distribution scale
+
+```{r}
+m_cig |>
+  as_draws_df() |>
+  select(contains("class")) |>
+  mutate(
+    `maladaptive - competent` = b_classmaladaptive,
+    `maladaptive - resilient` = b_classmaladaptive - b_classresilient,
+    `maladaptive - vulnerable` = b_classmaladaptive - b_classvulnerable,
+    `vulnerable - resilient` = b_classvulnerable - b_classresilient,
+    `vulnerable - competent` = b_classvulnerable,
+    `resilient - competent` = b_classresilient
+  ) |>
+  pivot_longer(contains("-")) |>
+  ggplot(aes(y = fct_reorder(name, value, mean), x = value)) +
+  stat_halfeye() +
+  labs(x = "difference in coefficients (sd)",
+       y = "") +
+  geom_vline(xintercept = 0, linetype = "dashed")
+  
+```
+
+##### In terms of predicted responses
+
+For the predicted responses, we generate a number of responses for individuals within each resilience group, repeated several thousand times, i.e. for each draw from the MCMC chain, we will generate a number of predicted responses for each group. What we could look at to determine if groups are different is the contrast in the expected value of responses.
+
+```{r cig-ev, include=T, echo=F}
+nd <- datagrid(
+  model = m_cig, 
+  all_handedness = c("Right", "Left"),
+  recruitment_centre = 1:8,
+  cigs_frequency_past_30_days_fu3 = unique,
+  class = unique,
+  FUN_numeric = mean)
+
+cig_epred_contrasts <- m_cig |>
+  add_epred_draws(newdata = nd, ndraws = 4000) |>
+  ungroup() |>
+  mutate(.category = as.numeric(as.character(.category)),
+         # compute product for each response
+         product = .category * .epred) |>
+  # each group has a unique draw, so we want to average over them 
+  group_by(class, all_handedness, recruitment_centre, cigs_frequency_past_30_days_fu3, .draw) |>
+  # compute expected value over all responses given a draw
+  summarise(item_mean = sum(product)) |>
+  select(.draw, class, item_mean) |>
+  # group_by(class) |>
+  # mean_qi(item_mean)
+  pivot_wider(
+    #id_cols = .draw,
+    names_from = class, 
+    values_from = item_mean) |>
+  select(.draw, competent, resilient, vulnerable, maladaptive) |>
+  mutate(
+    `maladaptive - competent` = maladaptive - competent,
+    `maladaptive - resilient` = maladaptive - resilient,
+    `maladaptive - vulnerable` = maladaptive - vulnerable,
+    `vulnerable - resilient` = vulnerable - resilient,
+    `vulnerable - competent` = vulnerable - competent,
+    `resilient - competent` = resilient - competent
+  ) |>
+  ungroup()
+
+# posterior distribution of expected values
+cig_epred_contrasts |>
+  select(.draw, competent, resilient, vulnerable, maladaptive) |>
+  pivot_longer(-.draw, names_to = "class") |>
+  ggplot(aes(x = value, y = fct_reorder(class, value, mean)), alpha = 0.5) +
+  stat_halfeye() +
+  labs(title = latex2exp::TeX("Posterior distribution of the expected value of $k \\in \\{0,...,6\\}$ responses (expected value = $\\sum_{i}^{k} p_k \\times k$)."),
+       subtitle = latex2exp::TeX("Each MCMC draw yields a probability value for each response $k$, for individuals within each resilience group. The distributions represent the range of expected values generated by the model."),
+       x = "Expected value", y = "")
+```
+
+```{r cig-contrast, include=T, echo=F}
+cig_epred_contrasts |>
+  select(.draw, contains("-")) |>
+  pivot_longer(-.draw, names_to = "contrast") |>
+  ggplot(aes(x = value, y = fct_reorder(contrast, value, mean)), alpha = 0.5) +
+  stat_halfeye() +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(title = "Contrast plot of expected value within resilience group",
+       x = "Difference of expected values", y = "") +
+  theme(legend.position = "")
+```
+
+### Marijuana/Hash Use
+
+##### 1) Fit
+
+```{r mj-use, message=F, warning=F, include=T, echo=T}
+m_mj <- brm(
+  formula = mj_hash_past_30_days_fu3 ~ 1 + class + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre
+  + all_handedness,
+  data = d,
+  family = cumulative(probit),
+  prior = c(prior(normal(0, 2), class = Intercept),
+            prior(normal(0, 1), class = b)),
+  iter = 3000,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  init = 0.2,
+  sample_prior = "yes",
+  # file_refit = "on_change",
+  control = list(adapt_delta = .99),
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/m_mj_hash"
+)
+```
+
+##### 2) Table of coefficients (with 95% CI)
+
+```{r mj-coef, include=T, echo=T}
+qi_table(m_mj)
+```
+
+##### 3) Posterior Distribution of coefficients
+
+```{r mj-dist, include=T, echo=T}
+#| label: mj-dist
+#| fig-cap: "Posterior distribution of coefficients with 95% CIs."
+
+coef_plot(m_mj, "Marijuana Use Frequency")
+```
+
+#### 4) Contrast plot
+
+##### On the latent distribution scale
+
+```{r}
+m_mj |>
+  as_draws_df() |>
+  select(contains("class")) |>
+  mutate(
+    `maladaptive - competent` = b_classmaladaptive,
+    `maladaptive - resilient` = b_classmaladaptive - b_classresilient,
+    `maladaptive - vulnerable` = b_classmaladaptive - b_classvulnerable,
+    `vulnerable - resilient` = b_classvulnerable - b_classresilient,
+    `vulnerable - competent` = b_classvulnerable,
+    `resilient - competent` = b_classresilient
+  ) |>
+  pivot_longer(contains("-")) |>
+  ggplot(aes(y = fct_reorder(name, value, mean), x = value)) +
+  stat_halfeye() +
+  labs(x = "difference in coefficients (sd)",
+       y = "") +
+  geom_vline(xintercept = 0, linetype = "dashed")
+  
+```
+
+##### In terms of predicted responses
+
+For the predicted responses, we generate a number of responses for individuals within each resilience group, repeated several thousand times, i.e. for each draw from the MCMC chain, we will generate a number of predicted responses for each group. What we could look at to determine if groups are different is the contrast in the expected value of responses.
+
+```{r mj-ev, include=T, echo=F}
+nd <- datagrid(
+  model = m_mj, 
+  all_handedness = c("Right", "Left"),
+  recruitment_centre = 1:8,
+  mj_hash_past_30_days_fu3 = unique,
+  class = unique,
+  FUN_numeric = mean)
+
+mj_epred_contrasts <- m_mj |>
+  add_epred_draws(newdata = nd, ndraws = 4000) |>
+  ungroup() |>
+  mutate(.category = as.numeric(as.character(.category)),
+         # compute product for each response
+         product = .category * .epred) |>
+  # each group has a unique draw, so we want to average over them 
+  group_by(class, all_handedness, recruitment_centre, mj_hash_past_30_days_fu3, .draw) |>
+  # compute expected value over all responses given a draw
+  summarise(item_mean = sum(product)) |>
+  select(.draw, class, item_mean) |>
+  # group_by(class) |>
+  # mean_qi(item_mean)
+  pivot_wider(
+    #id_cols = .draw,
+    names_from = class, 
+    values_from = item_mean) |>
+  select(.draw, competent, resilient, vulnerable, maladaptive) |>
+  mutate(
+    `maladaptive - competent` = maladaptive - competent,
+    `maladaptive - resilient` = maladaptive - resilient,
+    `maladaptive - vulnerable` = maladaptive - vulnerable,
+    `vulnerable - resilient` = vulnerable - resilient,
+    `vulnerable - competent` = vulnerable - competent,
+    `resilient - competent` = resilient - competent
+  ) |>
+  ungroup()
+
+# posterior distribution of expected values
+mj_epred_contrasts |>
+  select(.draw, competent, resilient, vulnerable, maladaptive) |>
+  pivot_longer(-.draw, names_to = "class") |>
+  ggplot(aes(x = value, y = fct_reorder(class, value, mean)), alpha = 0.5) +
+  stat_halfeye() +
+  labs(title = latex2exp::TeX("Posterior distribution of the expected value of $k \\in \\{0,...,6\\}$ responses (expected value = $\\sum_{i}^{k} p_k \\times k$)."),
+       subtitle = latex2exp::TeX("Each MCMC draw yields a probability value for each response $k$, for individuals within each resilience group. The distributions represent the range of expected values generated by the model."),
+       x = "Expected value", y = "")
+```
+
+```{r mj-contrast, include=T, echo=F}
+mj_epred_contrasts |>
+  select(.draw, contains("-")) |>
+  pivot_longer(-.draw, names_to = "contrast") |>
+  ggplot(aes(x = value, y = fct_reorder(contrast, value, mean)), alpha = 0.5) +
+  stat_halfeye() +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(title = "Contrast plot of expected value within resilience group",
+       x = "Difference of expected values", y = "") +
+  theme(legend.position = "")
+```
+
+## Mediation
+
+For each of the sum score outcomes above, I run a mediation analysis using as mediators the structural brain differences Burt et al identified. In other words, I want to know if these brain differences mediate any of the effects of the competence/adversity groupings on mental health or drug use.
+
+```{r mediators, include = T}
+# define mediators
+m1 <- bf(cl14_14_70_AdvXComp ~ class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness)
+
+m2 <- bf(cl20_44_40_ME_adv ~ class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness)
+
+m3 <- bf(cl32_44_27_ME_Adv ~ class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness)
+
+m4 <- bf(cl32_45_21_AdvXComp ~ class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness)
+
+m5 <- bf(clm6_36_m21_ME_Comp ~ class + sex + pds_sum_c + v_iq_c + p_iq_c + age_years_bsl_c + recruitment_centre + all_handedness)
+```
+
+Once the models are fit, I compute posterior distributions over the direct and indirect effects. Given these distributions, I then conduct a Bayesian hypothesis test [@wagenmakersBayesianHypothesisTesting2010] to examine if there are substantial mediation effects in any of the regions. In short the test computes a ratio of the posterior density and prior density at a specified value of the effect of interest. Below I specify the value at $0$ as an analogue to null hypothesis significance testing. An additional benefit of this test is that it also gives evidence *for* the null rather than only evidence against it.
+
+```{r hypothesis-help, message=F, warning=F, include=T, echo=T}
+
+hyp <- function(outcome, model){
+  
+  outcome <- str_remove_all(outcome, "_")
+  
+  hyp_v <- c(
+    str_c("cl204440MEadv_classresilient", "*", outcome, "_cl20_44_40_ME_adv", "=0"),
+    str_c("cl204440MEadv_classvulnerable", "*", outcome, "_cl20_44_40_ME_adv", "=0"),
+    str_c("cl204440MEadv_classmaladaptive", "*", outcome, "_cl20_44_40_ME_adv", "=0"),
+    
+    str_c("cl141470AdvXComp_classresilient", "*", outcome, "_cl14_14_70_AdvXComp", "=0"),
+    str_c("cl141470AdvXComp_classvulnerable", "*", outcome, "_cl14_14_70_AdvXComp", "=0"),
+    str_c("cl141470AdvXComp_classmaladaptive", "*", outcome, "_cl14_14_70_AdvXComp", "=0"),
+    
+    str_c("cl324427MEAdv_classresilient", "*", outcome, "_cl32_44_27_ME_Adv", "=0"),
+    str_c("cl324427MEAdv_classvulnerable", "*", outcome, "_cl32_44_27_ME_Adv", "=0"),
+    str_c("cl324427MEAdv_classmaladaptive", "*", outcome, "_cl32_44_27_ME_Adv", "=0"),
+    
+    str_c("cl324521AdvXComp_classresilient", "*", outcome, "_cl32_45_21_AdvXComp", "=0"),
+    str_c("cl324521AdvXComp_classvulnerable", "*", outcome, "_cl32_45_21_AdvXComp", "=0"),
+    str_c("cl324521AdvXComp_classmaladaptive", "*", outcome, "_cl32_45_21_AdvXComp", "=0"),
+    
+    str_c("clm636m21MEComp_classresilient", "*", outcome, "_clm6_36_m21_ME_Comp", "=0"),
+    str_c("clm636m21MEComp_classvulnerable", "*", outcome, "_clm6_36_m21_ME_Comp", "=0"),
+    str_c("clm636m21MEComp_classmaladaptive", "*", outcome, "_clm6_36_m21_ME_Comp", "=0")
+    )
+  
+  fit <- hypothesis(model, hyp_v)
+  fit
+}
+```
+
+I also plot the posterior distributions of the indirect effect of each class, following the recommendations of [@hayesStatisticalMediationAnalysis2014].
+
+### Total Difficulty Score
+
+```{r med-tds, include=T, echo=T}
+med_tds <- brm(
+  formula = bf(dawba_sdq_c_sebdtot_fu3 ~ class + sex + 
+                 cl14_14_70_AdvXComp + cl20_44_40_ME_adv +
+                 cl32_44_27_ME_Adv + cl32_45_21_AdvXComp +
+                 clm6_36_m21_ME_Comp + pds_sum_c + 
+                 v_iq_c + p_iq_c + age_years_bsl_c + 
+                 recruitment_centre + all_handedness) + 
+    m1 + m2 + m3 + m4 + m5,
+  data = d,
+  sample_prior = "yes",
+  # file_refit = "on_change",
+  prior = c(prior(normal(0, 3), class = Intercept),
+            prior(normal(0, 5), class = b)),
+  iter = 2500,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/mediation_tds"
+)
+
+hyp_tds <- hyp("dawba_sdq_c_sebdtot_fu3", med_tds)
+hyp_tds$hypothesis |>
+  select(Evid.Ratio, Estimate, Est.Error, contains("CI"), Hypothesis) |>
+  mutate(across(where(is.numeric), ~round(., 3))) |>
+  rmarkdown::paged_table()
+```
+
+Table of Bayesian hypothesis test results. (Evidence ratio > 1 supports "null" hypothesis. Evidence ratio < 1 supports "alternative" hypothesis.) Each row represents a different indirect effect for each unique pair of class and brain region.
+
+Plotted below are the posteriors of the indirect effect.
+
+```{r med-tds-ind, include=T, echo=T}
+med_tds |>
+  as_draws_df() |>
+  select(.draw,
+         contains("_class"),
+         contains("b_dawbasdqcsebdtotfu3_c")) |>
+  pivot_longer(cols = matches("(b_cl.*)_(class.*)"),
+               names_to = c("mediator_a", "class"),
+               names_pattern = "(b_cl.*)_(class.*)",
+               values_to = "a") |>
+  pivot_longer(cols = matches("(b_dawbasdqcsebdtotfu3)_(cl..)_(.*)"),
+               names_to = c("outcome", "mediator_b"),
+               names_pattern = "(b_dawbasdqcsebdtotfu3)_(cl.*)",
+               values_to = "b") |> 
+  # compute ab for every class, for every brain mediator
+  mutate(ab = a * b,
+         mediator_a = str_remove(mediator_a, "b_"),
+         mediator_b = str_remove_all(mediator_a, "_"),
+         mediator = mediator_a == mediator_b) |>
+  #group_by(mediator_a) |>
+  #mean_qi(ab) |>
+  # mutate(across(where(is.numeric), ~round(.x, 3)))
+  ggplot(aes(x = ab, y = mediator_a)) +
+  stat_halfeye() +
+  xlim(-0.3, 0.3) +
+  labs(y = "", x = "a * b")
+```
+
+### CESD
+
+```{r med-cesd, include=T, echo=T}
+med_cesd <- brm(
+  formula = bf(cesd_c_sum_fu3 ~ class + sex + 
+                 cl14_14_70_AdvXComp + cl20_44_40_ME_adv +
+                 cl32_44_27_ME_Adv + cl32_45_21_AdvXComp +
+                 clm6_36_m21_ME_Comp +
+                 pds_sum_c + v_iq_c + p_iq_c +
+    age_years_bsl_c + recruitment_centre + all_handedness) + 
+    m1 + m2 + m3 + m4 + m5,
+  data = d,
+  sample_prior = "yes",
+  # file_refit = "on_change",
+  prior = c(prior(normal(0, 3), class = Intercept),
+            prior(normal(0, 5), class = b)),
+  iter = 2500,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/mediation_cesd"
+)
+
+hyp_cesd <- hyp("cesd_c_sum_fu3", med_cesd)
+hyp_cesd$hypothesis |>
+  select(Evid.Ratio, Estimate, Est.Error, contains("CI"), Hypothesis) |>
+  mutate(across(where(is.numeric), ~round(., 3))) |>
+  rmarkdown::paged_table()
+```
+
+Table of Bayesian hypothesis test results. (Evidence ratio > 1 supports "null" hypothesis. Evidence ratio < 1 supports "alternative" hypothesis.) Each row represents a different indirect effect for each unique pair of class and brain region.
+
+Plotted below are the posteriors of the indirect effect.
+
+```{r med-cesd-ind, include=T, echo=T}
+med_cesd |>
+  as_draws_df() |>
+  select(.draw,
+         contains("_class"),
+         contains("b_cesdcsumfu3_c")) |>
+  pivot_longer(cols = matches("(b_cl.*)_(class.*)"),
+               names_to = c("mediator_a", "class"),
+               names_pattern = "(b_cl.*)_(class.*)",
+               values_to = "a") |>
+  pivot_longer(cols = matches("(b_cesdcsumfu3)_(cl..)_(.*)"),
+               names_to = c("outcome", "mediator_b"),
+               names_pattern = "(b_cesdcsumfu3)_(cl.*)",
+               values_to = "b") |> 
+  # compute ab for every class, for every brain mediator
+  mutate(ab = a * b,
+         mediator_a = str_remove(mediator_a, "b_"),
+         mediator_b = str_remove_all(mediator_a, "_"),
+         mediator = mediator_a == mediator_b) |>
+  #group_by(mediator_a) |>
+  #mean_qi(ab) |>
+  # mutate(across(where(is.numeric), ~round(.x, 3)))
+  ggplot(aes(x = ab, y = mediator_a)) +
+  stat_halfeye() +
+  xlim(-0.3, 0.3) +
+  labs(y = "", x = "a * b")
+```
+
+### AUDIT
+
+```{r med-aud, message=F, warning=F, include=T, echo=T}
+med_aud <- brm(
+  formula = bf(audit_total_score_fu3 ~ class + sex + 
+                 cl14_14_70_AdvXComp + cl20_44_40_ME_adv +
+                 cl32_44_27_ME_Adv + cl32_45_21_AdvXComp +
+                 clm6_36_m21_ME_Comp +
+                 pds_sum_c + v_iq_c + p_iq_c +
+    age_years_bsl_c + recruitment_centre + all_handedness) + 
+    m1 + m2 + m3 + m4 + m5,
+  data = d,
+  sample_prior = "yes",
+  # file_refit = "on_change",
+  prior = c(prior(normal(0, 3), class = Intercept),
+            prior(normal(0, 5), class = b)),
+  iter = 2500,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/mediation_audit"
+)
+
+hyp_aud <- hyp("audit_total_score_fu3", med_aud)
+hyp_aud$hypothesis |>
+  select(Evid.Ratio, Estimate, Est.Error, contains("CI"), Hypothesis) |>
+  mutate(across(where(is.numeric), ~round(., 3))) |>
+  rmarkdown::paged_table()
+```
+
+Table of Bayesian hypothesis test results. (Evidence ratio > 1 supports "null" hypothesis. Evidence ratio < 1 supports "alternative" hypothesis.) Each row represents a different indirect effect for each unique pair of class and brain region.
+
+Plotted below are the posteriors of the indirect effect.
+
+```{r med-aud-ind, include=T, echo=T}
+med_aud |>
+  as_draws_df() |>
+  select(.draw,
+         contains("_class"),
+         contains("b_audittotalscorefu3_c")) |>
+  pivot_longer(cols = matches("(b_cl.*)_(class.*)"),
+               names_to = c("mediator_a", "class"),
+               names_pattern = "(b_cl.*)_(class.*)",
+               values_to = "a") |>
+  pivot_longer(cols = matches("(b_audittotalscorefu3)_(cl..)_(.*)"),
+               names_to = c("outcome", "mediator_b"),
+               names_pattern = "(b_audittotalscorefu3)_(cl.*)",
+               values_to = "b") |> 
+  # compute ab for every class, for every brain mediator
+  mutate(ab = a * b,
+         mediator_a = str_remove(mediator_a, "b_"),
+         mediator_b = str_remove_all(mediator_a, "_"),
+         mediator = mediator_a == mediator_b) |>
+  #group_by(mediator_a) |>
+  #mean_qi(ab) |>
+  # mutate(across(where(is.numeric), ~round(.x, 3)))
+  ggplot(aes(x = ab, y = mediator_a)) +
+  stat_halfeye() +
+  xlim(-0.3, 0.3) +
+  labs(y = "", x = "a * b")
+```
+
+### RAPI
+
+```{r med-rap, message=F, warning=F, include=T, echo=T}
+med_rap <- brm(
+  formula = bf(rapi_c_sum_fu3 ~ class + sex + 
+                 cl14_14_70_AdvXComp + cl20_44_40_ME_adv +
+                 cl32_44_27_ME_Adv + cl32_45_21_AdvXComp +
+                 clm6_36_m21_ME_Comp +
+                 pds_sum_c + v_iq_c + p_iq_c +
+    age_years_bsl_c + recruitment_centre + all_handedness) + 
+    m1 + m2 + m3 + m4 + m5,
+  data = d,
+  sample_prior = "yes",
+  # file_refit = "on_change",
+  prior = c(prior(normal(0, 3), class = Intercept),
+            prior(normal(0, 5), class = b)),
+  iter = 2500,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/mediation_rapi"
+)
+
+hyp_rap <- hyp("rapi_c_sum_fu3", med_rap)
+hyp_rap$hypothesis |>
+  select(Evid.Ratio, Estimate, Est.Error, contains("CI"), Hypothesis) |>
+  mutate(across(where(is.numeric), ~round(., 3))) |>
+  rmarkdown::paged_table()
+```
+
+Table of Bayesian hypothesis test results. (Evidence ratio > 1 supports "null" hypothesis. Evidence ratio < 1 supports "alternative" hypothesis.) Each row represents a different indirect effect for each unique pair of class and brain region.
+
+Plotted below are the posteriors of the indirect effect.
+
+```{r med-rapi-ind, include=T, echo=T}
+med_rap |>
+  as_draws_df() |>
+  select(.draw,
+         contains("_class"),
+         contains("b_rapicsumfu3_c")) |>
+  pivot_longer(cols = matches("(b_cl.*)_(class.*)"),
+               names_to = c("mediator_a", "class"),
+               names_pattern = "(b_cl.*)_(class.*)",
+               values_to = "a") |>
+  pivot_longer(cols = matches("(b_rapicsumfu3)_(cl..)_(.*)"),
+               names_to = c("outcome", "mediator_b"),
+               names_pattern = "(b_rapicsumfu3)_(cl.*)",
+               values_to = "b") |> 
+  # compute ab for every class, for every brain mediator
+  mutate(ab = a * b,
+         mediator_a = str_remove(mediator_a, "b_"),
+         mediator_b = str_remove_all(mediator_a, "_"),
+         mediator = mediator_a == mediator_b) |>
+  #group_by(mediator_a) |>
+  #mean_qi(ab) |>
+  # mutate(across(where(is.numeric), ~round(.x, 3)))
+  ggplot(aes(x = ab, y = mediator_a)) +
+  stat_halfeye() +
+  xlim(-0.3, 0.3) +
+  labs(y = "", x = "a * b")
+```
+
+### PSS
+
+```{r med-pss, message=F, warning=F, include=T, echo=T}
+med_pss <- brm(
+  formula = bf(pss_c_sum_fu3 ~ class + sex + 
+                 cl14_14_70_AdvXComp + cl20_44_40_ME_adv +
+                 cl32_44_27_ME_Adv + cl32_45_21_AdvXComp +
+                 clm6_36_m21_ME_Comp +
+                 pds_sum_c + v_iq_c + p_iq_c +
+    age_years_bsl_c + recruitment_centre + all_handedness) + 
+    m1 + m2 + m3 + m4 + m5,
+  data = d,
+  sample_prior = "yes",
+  # file_refit = "on_change",
+  prior = c(prior(normal(0, 3), class = Intercept),
+            prior(normal(0, 5), class = b)),
+  iter = 2500,
+  warmup = 500,
+  chains = 4, 
+  seed = 5,
+  file = "~/Desktop/PhD/resilience-im-burt/brms-fits/mediation_pss"
+)
+
+hyp_pss <- hyp("pss_c_sum_fu3", med_pss)
+hyp_pss$hypothesis |>
+  select(Evid.Ratio, Estimate, Est.Error, contains("CI"), Hypothesis) |>
+  mutate(across(where(is.numeric), ~round(., 3))) |>
+  rmarkdown::paged_table()
+```
+
+Table of Bayesian hypothesis test results. (Evidence ratio > 1 supports "null" hypothesis. Evidence ratio < 1 supports "alternative" hypothesis.) Each row represents a different indirect effect for each unique pair of class and brain region.
+
+Plotted below are the posteriors of the indirect effect.
+
+```{r med-pss-ind, include=T, echo=T}
+med_pss |>
+  as_draws_df() |>
+  select(.draw,
+         contains("_class"),
+         contains("b_psscsumfu3_c")) |>
+  pivot_longer(cols = matches("(b_cl.*)_(class.*)"),
+               names_to = c("mediator_a", "class"),
+               names_pattern = "(b_cl.*)_(class.*)",
+               values_to = "a") |>
+  pivot_longer(cols = matches("(b_psscsumfu3)_(cl..)_(.*)"),
+               names_to = c("outcome", "mediator_b"),
+               names_pattern = "(b_psscsumfu3)_(cl.*)",
+               values_to = "b") |> 
+  # compute ab for every class, for every brain mediator
+  mutate(ab = a * b,
+         mediator_a = str_remove(mediator_a, "b_"),
+         mediator_b = str_remove_all(mediator_a, "_"),
+         mediator = mediator_a == mediator_b) |>
+  #group_by(mediator_a) |>
+  #mean_qi(ab) |>
+  # mutate(across(where(is.numeric), ~round(.x, 3)))
+  ggplot(aes(x = ab, y = mediator_a)) +
+  stat_halfeye() +
+  xlim(-0.3, 0.3) +
+  labs(y = "", x = "a * b")
+```
+
+# Conclusion
+
+The results of this project suggest that early competence, as measured in adolescence, interacts with lifetime adversity in such a way as to be predictive of future mental health outcomes. This is aligned with conclusions by [@roismanSalientEmergingDevelopmental2004], where they find that salient developmental tasks are predictive of future success within and across domains of competence, broadly defined. The findings in this study also corroborate with [@fritz2018] in that sub-domains of competence as it is defined here may serve to buffer the effects of adversity on mental health.
+
+Regarding drug use, the results are null regarding the question at hand. What we want to know is if competence offsets the effects of adversity. Hence, the contrasts we care about are `maladaptive-competent`, and `maladaptive-resilient` since it's expected that the competent and resilient groups have similar outcomes due to the effect of high competence, while the maladaptive group is high in adversity but low in competence.
+
+We don't see that effect with these contrasts on the AUDIT or RAPI scale since a significant portion of their posterior distributions overlap an effect of $0$. Additionally, the differences are small in comparison to the magnitude of the differences on the mental health measures, the posteriors of which are more definitively well outside of a null effect.
+
+The results for cigarette use and marijuana/hash use are more difficult to interpret since I have used the ordered probit model. For cigarette use, the contrast plot of coefficients suggest that the maladaptive and competent group differ in mean response on *the latent distribution scale*. We see that they also differ in expected value on the scale of the response. So it seems that competence does interact with adversity in a way as to suggest that the maladaptive group is more likely to smoke cigarettes than the competent group, on average. Additionally, a similar conclusion can be drawn for the vulnerable group relative to the competent group. However, it doesn't seem that competence operates as a buffer to adversity since we care about the contrast between the maladaptive and competent group, and maladaptive and resilient group. A similar conclusion is drawn regarding marijuana/hash use.
+
+With regard to the mediation analysis, none of the structural brain differences identified between the groups at age 14 mediated the effect of the competence/adversity groupings on future mental health or drug use. This is made clear by the fact that the posterior distributions of the indirect effects for every outcome are narrowly centered at zero. That is, the model is quite confident in saying that we have null effects.
+
+# Appendix
+
+## Tables
+
+### Descriptive
+
+```{r Descriptives}
+#| tbl-cap-location: top
+#| label: tbl-descriptives
+#| tbl-cap: Descriptive statistics of variables used in analyses
+d |> 
+  select(class, sex, all_handedness, pds_sum, 
+         recruitment_centre, age_years_bsl, p_iq, v_iq) |>
+    rename(`Age (years)` = age_years_bsl,
+         `Site` = recruitment_centre,
+         `Puberty score` = pds_sum,
+         `Sex` = sex,
+         `Verbal IQ` = v_iq,
+         `Performance IQ` = p_iq,
+         `Handedness` = all_handedness
+         ) |>
+  tbl_summary(by = "class", missing = "no") |>
+  add_overall() |>
+  bold_labels() |>
+  as_gt()
+```
+
+------------------------------------------------------------------------
+
+### Regressions
+
+```{r Models-tds}
+#| tbl-cap: Robust regression output for TDS, Internalizing, Externalizing
+#| tbl-cap-location: top
+
+t_tds <- m_tds |>
+  tbl_regression()
+
+t_int <- m_int |>
+  tbl_regression()
+
+t_ext <- m_ext |>
+  tbl_regression()
+
+tbl_merge(
+  tbls = list(t_tds, t_int, t_ext),
+  tab_spanner = c("TDS", "Internalizing", "Externalizing")
+) |>
+  modify_header(label ~ "Variable") |> 
+  bold_labels()
+
+```
+
+------------------------------------------------------------------------
+
+```{r Models-mh}
+#| tbl-cap: Robust regression output for CESD and PSS scores
+#| tbl-cap-location: top
+
+t_cesd <- m_cesd |>
+  tbl_regression()
+
+t_pss <- m_pss |>
+  tbl_regression()
+
+tbl_merge(
+  tbls = list(t_cesd, t_pss),
+  tab_spanner = c("CESD score", "PSS score")
+) |>
+  modify_header(label ~ "Variable") |> 
+  bold_labels()
+```
+
+------------------------------------------------------------------------
+
+```{r Models-alc}
+#| tbl-cap: Robust regression output for AUDIT and RAPI scores
+#| tbl-cap-location: top
+t_aud <- m_audit_sum |>
+  tbl_regression()
+
+t_rapi <- m_rapi |>
+  tbl_regression()
+
+tbl_merge(
+  tbls = list(t_aud, t_rapi),
+  tab_spanner = c("AUDIT score", "RAPI score")
+) |>
+  modify_header(label ~ "Variable") |> 
+  bold_labels()
+
+```
+
+------------------------------------------------------------------------
+
+```{r Models-ordered}
+#| tbl-cap: Ordered probit regression output for frequency of cigarette and marijuana/hash use
+#| tbl-cap-location: top
+
+t_cig <- m_cig |>
+  tbl_regression()
+
+t_mj <- m_mj |>
+  tbl_regression()
+
+tbl_merge(
+  tbls = list(t_cig, t_mj),
+  tab_spanner = c("Cigarette Use", "Marijuana/Hash Use")
+) |>
+  modify_header(label ~ "Variable")
+  
+```
