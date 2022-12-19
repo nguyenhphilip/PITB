@@ -151,7 +151,7 @@ mod |>
   rmarkdown::paged_table()
 ```
 
-Since our variables are standardized and we only have two variables in the model, the $\beta$ estimate is equivalent to the correlation coefficient $r$. Here the estimate is $0.056$, which is pretty close to the correlation of the sample. But it isn't the actual value we used in the covariance matrix we used to generate our data!
+Since our variables are standardized and we only have two variables in the model, the $\beta$ estimate is equivalent to the correlation coefficient $r$. Here the estimate is $0.056$, which is pretty close to the correlation of the sample. But it isn't the actual correlation value in the covariance matrix we used to generate our data!
 
 Let's increase the sample size and see what happens.
 
