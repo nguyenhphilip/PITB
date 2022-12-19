@@ -1831,7 +1831,7 @@ med_pss |>
 
 # Conclusion
 
-The results of this project suggest that early competence, as measured in adolescence, interacts with lifetime adversity in such a way as to be predictive of future mental health outcomes. This is aligned with conclusions by [@roismanSalientEmergingDevelopmental2004], where they find that salient developmental tasks are predictive of future success within and across domains of competence, broadly defined. The findings in this study also corroborate with [@fritz2018] in that sub-domains of competence as it is defined here may serve to buffer the effects of adversity on mental health.
+The results of this project suggest that early competence, as measured in adolescence, interacts with lifetime adversity in such a way as to be predictive of future mental health outcomes. This is aligned with conclusions by [@roismanSalientEmergingDevelopmental2004], where they find that salient developmental tasks are predictive of future success within and across domains of competence, broadly defined. The findings in this study also corroborate with [@fritz2018] in that sub-domains of competence as defined here may serve to buffer the effects of adversity on mental health.
 
 Regarding drug use, the results are null regarding the question at hand. What we want to know is if competence offsets the effects of adversity. Hence, the contrasts we care about are `maladaptive-competent`, and `maladaptive-resilient` since it's expected that the competent and resilient groups have similar outcomes due to the effect of high competence, while the maladaptive group is high in adversity but low in competence.
 
