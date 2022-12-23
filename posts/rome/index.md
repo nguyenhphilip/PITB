@@ -21,7 +21,7 @@ It seemed rational then to find out if I’d actually enjoy doing the research i
 
 Long story short, I didn’t enjoy it. I bemoaned the literature reviews, academic writing, and how little inherent feedback I received from the work. I never really knew if I was moving in the right direction, and what was deemed a discovery was less than thrilling to me. 
 
-Maybe I was missing the bigger picture, I thought. They weren't merely hunting for p-values; they were asking and refining questions, proposing and testing hypotheses, defining and advancing science. My optimism was often revived when I reminded myself of this. But when it came to actually doing the work, my mind was often resistant and someplace else. Perhaps I liked the idea of becoming a scientist more than actually being a scientist.
+Maybe I was missing the bigger picture, I thought. They weren't merely hunting for p-values; they were asking and refining questions, proposing and testing hypotheses, defining and advancing science. My optimism was often revived when I reminded myself of this. But when it came to actually doing the work, my mind was resistant and someplace else. Perhaps I liked the idea of becoming a scientist more than actually being a scientist.
 
 I trudged through and finished the project, but by semester’s end, my thoughts had grown cynical and indifferent as my curiosity and general enthusiasm for science waned. I was likely burning out at this point. In addition to the research project, I was still studying for calculus and statistics while also working full time on the study. A break was called for. Fortunately, the lab was headed to Rome. 
 
