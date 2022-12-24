@@ -6,7 +6,7 @@ categories: [Camino]
 
 ### October 1st, 2017 - Day 25
 
-Dawn. A ridge of silhouettes and gray clouds against the dark expanse. A string of headlamps clambering up a mountain. At the top, an iron cross.
+Dawn. A cast of silhouettes and gray clouds against the dark expanse. A string of headlamps clambering up a mountain. At the top, an iron cross.
 
 The autumnal air invigorates me, my legs are weightless. I pass several pilgrims on my way up. Shanti is up ahead. I reach him and he smiles at me. We climb through the dark together, delighting in the thrill of the ascent. The Spaniard and I are at home here in the highlands of Galicia.
 
