@@ -71,10 +71,10 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-freeze','listing-title-block-banner','listing-title','listing-date','listing-categories','listing-path','listing-author','listing-description','listing-filename','listing-file-modified','listing-reading-time','listing-subtitle','listing-image','listing-tags',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] }],
+      valueNames: ['listing-freeze','listing-title-block-banner','listing-title','listing-date','listing-categories','listing-path','listing-author','listing-description','listing-filename','listing-file-modified','listing-reading-time','listing-subtitle','listing-image','listing-tags','listing-toc',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] }],
       page: 5,
     pagination: { item: "<li class='page-item'><a class='page page-link' href='#'></a></li>" },
-      searchColumns: ["listing-freeze","listing-title-block-banner","listing-title","listing-date","listing-categories","listing-path","listing-author","listing-description","listing-filename","listing-file-modified","listing-reading-time","listing-subtitle","listing-image","listing-tags"],
+      searchColumns: ["listing-freeze","listing-title-block-banner","listing-title","listing-date","listing-categories","listing-path","listing-author","listing-description","listing-filename","listing-file-modified","listing-reading-time","listing-subtitle","listing-image","listing-tags","listing-toc"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -164,6 +164,14 @@ ul.task-list li input[type="checkbox"] {
 
 
 <div class="quarto-listing quarto-listing-container-custom" id="listing-listing">
+  <div style="display: block; margin-bottom: 0.15em;">
+    <div style="display: inline-block; float: right;">
+      <span style="color:gray; font-size:small;">Dec 30, 2022</span>
+    </div>
+    <div style="display: inline-block;">
+      <a style="display: inline-block;" href="./posts/i-left-my-phd/index.html">I left my PhD</a>
+    </div>
+  </div>
   <div style="display: block; margin-bottom: 0.15em;">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 30, 2022</span>
