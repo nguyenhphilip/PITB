@@ -29,6 +29,32 @@ Boredom seems like a crime against our own innate nature. We are born wholly cur
 
 Busyness is the destroyer of boredom? Maybe, and also of fun and joy. It's a poor substitute for both, and yet it's so pervasive. Again, it's not necessarily about how much we are doing and how occupied we are. We also have to consider the quality of the experience and our engagements.
 
+Boredom leads to sadness and restlessness (or is it characterized by restlessness?). It's a mental state that brings about other mental states, usually unpleasant ones. Is boredom a mix of these states, or is it something more distinct? I think it's distinct and has several manifestations. The phenomenology of it, for me, is often characterized by a restlessness, but whether it leads to something like sadness or serious reflection depends on many other factors. I'm not often bored, but I can be restless, which might just be boredom?
+
+# quotes
+
+> Acedia, the “disease that wasteth at noonday” or the demon responsible for the infliction of the disease, was a form of pre-boredom or boredom with sloth that afflicted innumerable practitioners—priests, monks, hermits, and the like—of the religious life in the Christian middle ages. Since our concern here is with philosophical thought on boredom, this fascinating chapter in the book of boredom must be largely passed over. But before it is passed over altogether, it should be noted that there was an ethical overtone to acedia/boredom. The overtone was negative. If God, God’s world, and the life God has ordained for you seem boring to you, there is almost certainly something wrong with your soul, something you had better hasten to fix.
+
+It's interesting that boredom--or acedia in this case, the noonday demon--has a connection to religion. A wandering mind is one that looks beyond God for meaning, which threatens one's relationship to him, and those that be in power, i.e. those who use religion as a way to control people. Like loneliness, boredom seems to be a social burden. If you go to someone claiming that you are bored, it almost seems unbelievable, especially if the person on the receiving end is enjoying themselves and their life. I guess this can be said for sharing emotions more generally. It's hard for people to "get us" sometimes.
+
+> First, there is his claim that boredom is one of the twin poles of human life. The other pole is need, want, lack, or desire. Here is the way it works. We feel that we lack something, something we need. We pursue it and, if we are fortunate, capture it. But the capture does not bring the satisfaction we had expected. What we get instead is a strong dose of boredom, and we find ourselves casting about to identify another object of pursuit, somehow convincing ourselves that if we can get it, we will experience satisfaction. Neither want nor boredom is a particularly pleasant state to be in; in fact, both are forms of misery. And so life may be viewed as a pendulum that passes back and forth between one bad state and another.
+
+The twin poles of human life, according to Schopenhauer. "But the capture does not bring the satisfaction we had expected." What he seems to refer to is not that we aren't satisfied in the moment, but that it doesn't last once we achieve our aims. What was this guy like, lol, to think this way? Bouncing between boredom and desire.
+
+> Second, Schopenhauer offers something like a definition of boredom, a brief analysis of the concept, which may be the first offered in Western thought. Boredom, he says, is a “tame longing without any particular object.”
+
+> Third, Schopenhauer offers in addition not just a definition but a substantive account of what boredom is. Boredom, he says, is the sensation of the worthlessness of existence. Boredom may even be regarded as evidence or proof that existence is worthless. If life itself had any real, positive value, there would be no such thing as boredom. Simply being alive would delight us. But, as things are, we can find no modicum of relief from our misery, except when we are diverted or distracted from our lives.
+
+Man, Schopenhauer is really a downer, lol. I'm not sure I agree with the claim that "if life itself had any real, positive value, there would be no such thing as boredom." In some cases it leads us to seek deeper meaning from life, which points to its value and implies that there is something worthy of seeking.
+
+> Fourth, Schopenhauer reflects on what boredom or its absence reveals about the intelligence and complexity of the one who suffers from it. His general claim here is that a propensity to be bored is a sign of intelligence. Animals, he speculates, feel very little boredom. Humans are prone to it in proportion to how smart they are. It takes a rich and varied world to hold the interest of a genius, and the real world often doesn’t measure up. As for those who are content with something like mere everyday existence, they are the stupidest of people, not much, if any, above the level of the brutes.
+
+I definitely do not agree with this. One, he's defining intelligence very narrowly and as if human intelligence were the ultimate benchmark (plus I think some animals do get bored).
+
+> Thoreau’s point about boredom is that it is the state of one of limited mental capacities, or of one “asleep”. An intelligent and alert mind is never bored. In its surroundings there are always a thousand things that are fascinating and sublime. The hum of a mosquito, if alertly attended to, is as fascinating and enthralling as an Iliad or an Odyssey.
+
+There is certainly an element of subjectivity to boredom. The mosquito might fascinate and enthrall, but this seems to depend on and can be enhanced by how learned a person is. I agree with the overall sentiment though, that a mosquito can be as engaging as a great book. (Hence, if alertly attended to.)
+
 # further explorations
 
 - [Paul Bloom and Sam Harris: The Limits of Pleasure](https://www.samharris.org/podcasts/making-sense-episodes/266-limits-pleasure)

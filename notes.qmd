@@ -13,4 +13,4 @@ page-layout: article
 title-block-banner: false
 ---
 
-*A non-exhaustive archive of loose notes for the various things I'm learning, reading, and thinking about.*
+*A non-exhaustive archive of loose notes on what I'm learning, reading, or thinking about.*
