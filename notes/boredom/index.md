@@ -1,7 +1,7 @@
 ---
 title: "Boredom"
 date: "01-03-23"
-categories: [life, notes]
+categories: [life]
 title-block-banner: false
 ---
 

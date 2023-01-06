@@ -2,10 +2,10 @@
 title: ""
 listing:
   contents: notes
-  template: archive.ejs
+  template: notes.ejs
   sort: "date desc"
   type: default
-  categories: false
+  categories: true
   page-size: 10
   sort-ui: false
   filter-ui: false
@@ -13,4 +13,4 @@ page-layout: article
 title-block-banner: false
 ---
 
-*A non-exhaustive archive of loose notes on what I'm learning, reading, or thinking about.*
+*A non-exhaustive archive of loose notes on what I'm learning, reading, or thinking about. Note (heh) that these notes are incomplete at best. They're informal attempts at gaining a deeper understanding of the things that currently have my attention. I strangely enjoy doing this sort of thing and will update my notes only when I feel like it. I am sharing them here though so that my notes are somewhat legible and coherent for the random stranger who may find themselves in this part of the web.*

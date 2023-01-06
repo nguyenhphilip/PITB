@@ -71,9 +71,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-freeze','listing-title-block-banner','listing-title','listing-date','listing-categories','listing-path','listing-author','listing-description','listing-filename','listing-file-modified','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] }],
+      valueNames: ['listing-freeze','listing-title-block-banner','listing-title','listing-date','listing-categories','listing-path','listing-author','listing-description','listing-filename','listing-file-modified','listing-reading-time','listing-image',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] }],
       
-      searchColumns: ["listing-freeze","listing-title-block-banner","listing-title","listing-date","listing-categories","listing-path","listing-author","listing-description","listing-filename","listing-file-modified","listing-reading-time"],
+      searchColumns: ["listing-freeze","listing-title-block-banner","listing-title","listing-date","listing-categories","listing-path","listing-author","listing-description","listing-filename","listing-file-modified","listing-reading-time","listing-image"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -95,12 +95,12 @@ ul.task-list li input[type="checkbox"] {
 
 <link rel="stylesheet" href="styles.css">
 <meta name="twitter:title" content="Phil in the Blank -">
-<meta name="twitter:description" content="A non-exhaustive archive of loose notes on what I’m learning, reading, or thinking about.">
+<meta name="twitter:description" content="A non-exhaustive archive of loose notes on what I’m learning, reading, or thinking about. Note (heh) that these notes are incomplete at best.">
 <meta name="twitter:creator" content="@NguyenHPhil">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-sidebar floating fullcontent">
+<body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -153,38 +153,36 @@ ul.task-list li input[type="checkbox"] {
     </div>
 </nav>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="life">life <span class="quarto-category-count">(1)</span></div><div class="category" data-category="mental health">mental health <span class="quarto-category-count">(1)</span></div><div class="category" data-category="psychedelics">psychedelics <span class="quarto-category-count">(1)</span></div><div class="category" data-category="statistics">statistics <span class="quarto-category-count">(2)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
 
-<p><em>A non-exhaustive archive of loose notes on what I’m learning, reading, or thinking about.</em></p>
+<p><em>A non-exhaustive archive of loose notes on what I’m learning, reading, or thinking about. Note (heh) that these notes are incomplete at best. They’re informal attempts at gaining a deeper understanding of the things that currently have my attention. I strangely enjoy doing this sort of thing and will update my notes only when I feel like it. I am sharing them here though so that my notes are somewhat legible and coherent for the random stranger who may find themselves in this part of the web.</em></p>
 
 
 
 
 <div class="quarto-listing quarto-listing-container-custom" id="listing-listing">
   <div style="display: block; margin-bottom: 0.15em;">
-    <div style="display: inline-block; float: right;">
-      <span style="color:gray; font-size:small;">Jan 3, 2023</span>
+    <div style="display: inline-block;">
+      <a style="display: inline-block;" href="./notes/canalization-psychopathy/index.html">Canalization and plasticity in psychopathology</a>
     </div>
+  </div>
+  <div style="display: block; margin-bottom: 0.15em;">
     <div style="display: inline-block;">
       <a style="display: inline-block;" href="./notes/boredom/index.html">Boredom</a>
     </div>
   </div>
   <div style="display: block; margin-bottom: 0.15em;">
-    <div style="display: inline-block; float: right;">
-      <span style="color:gray; font-size:small;">Dec 17, 2022</span>
-    </div>
     <div style="display: inline-block;">
       <a style="display: inline-block;" href="./notes/ordered-probit/index.html">Ordered Probit Regression</a>
     </div>
   </div>
   <div style="display: block; margin-bottom: 0.15em;">
-    <div style="display: inline-block; float: right;">
-      <span style="color:gray; font-size:small;">Dec 10, 2022</span>
-    </div>
     <div style="display: inline-block;">
       <a style="display: inline-block;" href="./notes/linear-regression/index.html">Linear Regression</a>
     </div>
