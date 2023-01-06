@@ -1,7 +1,7 @@
 ---
 title: "Seeds: Looking back on 2020"
 date: "01-17-2021"
-categories: [Camino]
+categories: [life]
 ---
 
 ![](/photos/seeds4.jpg)

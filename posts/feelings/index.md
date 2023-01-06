@@ -1,7 +1,7 @@
 ---
 title: "Feelings"
 date: "01-06-2018"
-categories: [Camino]
+categories: [life]
 ---
 
 Feelings are fleeting by nature, like the passage of clouds on a warm summer day.

@@ -1,7 +1,10 @@
 ---
 title: "Canalization and plasticity in psychopathology"
 date: "01-06-2023"
-categories: [mental health, psychedelics]
+categories: 
+  - "mental health"
+  - "psychedelics"
+  - "dynamical systems"
 title-block-banner: false
 ---
 

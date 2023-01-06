@@ -6,7 +6,7 @@ listing:
   sort: "date desc"
   type: default
   categories: false
-  page-size: 5
+  page-size: 100
   sort-ui: false
   filter-ui: false
 page-layout: article

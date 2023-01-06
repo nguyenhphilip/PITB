@@ -1,7 +1,7 @@
 ```{=html}
-
+<div class="list">
 <% for (const item of items) { %>
-  <div style = "display: block; margin-bottom: 0.15em;">
+  <div style = "display: block; margin-bottom: 0.15em;" <%= metadataAttrs(item) %>>
     <div style = "display: inline-block; float: right;">
       <span style = "color:gray; font-size:small;"><%= item.date %></span>
     </div>
@@ -10,4 +10,5 @@
     </div>
   </div>
 <% } %>
+</div>
 ```

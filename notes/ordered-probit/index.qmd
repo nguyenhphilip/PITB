@@ -1,7 +1,8 @@
 ---
 title: "Ordered Probit Regression"
 date: "12-17-2022"
-categories: [statistics]
+categories: 
+  - "statistics"
 title-block-banner: false
 ---
 
