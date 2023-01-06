@@ -1,7 +1,7 @@
 ---
 title: "Predicting mental health and substance use in adulthood from resilience in adolescence"
-subtitle: "Bayes. Mediation. Lots of data."
-description: "In this project I do lots of Bayesian analysis and explore whether resilience in adolescence is predictive of various outcomes in adulthood."
+subtitle: "Bayes. Mediation. Ordinal regression. Lots of data."
+description: "In this project I explore whether resilience in adolescence is predictive of various outcomes in adulthood."
 tags: 
   - resilience
   - mental health
