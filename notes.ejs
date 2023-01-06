@@ -2,7 +2,7 @@
 <div class="list">
 <% for (const item of items) { %>
   <div <%= metadataAttrs(item) %>>
-    <a href="<%- item.href %>" class="listing-name"><%= item.title %></a><br/>
+    <a href="<%- item.path %>" class="listing-name"><%= item.title %></a><br/>
     <span class="listing-custom-field"><%= item['custom-field'] %><span>
   </div>
 <% } %>
