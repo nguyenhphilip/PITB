@@ -1,5 +1,6 @@
 ---
 title: "The wooden table I always sit at"
+subtitle: "Catalogue of delights: 1"
 date: "02-18-23"
 categories:
   - "life"
