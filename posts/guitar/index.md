@@ -64,3 +64,7 @@ How it started (around March-April 2020, Georgia by Vance Joy). I struggled so h
 How it\'s going (short practice session, [Like a Star](https://www.youtube.com/watch?v=oTQyofHm3cw&list=RDMM&start_radio=1) by Youngso Kim). Still struggling, but with much more complex songs!:
 
 <iframe width="100%" height="350" src="https://www.youtube.com/embed/MoQwODagTng" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+Update Feb 3, 2023: Full version below:
+
+<iframe width="100%" height="350" src="https://www.youtube.com/embed/DhCz4uHYDgU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
