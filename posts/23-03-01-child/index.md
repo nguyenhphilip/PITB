@@ -1,7 +1,7 @@
 ---
 title: "To the child reading a book"
 subtitle: "Catalogue of delights: 6"
-date: "02-22-23"
+date: "03-01-23"
 categories:
   - "life"
   - "delights"
