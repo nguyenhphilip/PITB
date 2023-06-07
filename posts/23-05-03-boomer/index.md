@@ -1,5 +1,5 @@
 ---
-title: "Life of Pi"
+title: "Ok boomer"
 subtitle: "Catalogue of delights: 11"
 date: "05-03-23"
 categories:
