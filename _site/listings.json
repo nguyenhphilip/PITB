@@ -2,6 +2,7 @@
   {
     "listing": "/poems.html",
     "items": [
+      "/poems/23-08-05-running/index.html",
       "/poems/04-10-23-RRR/index.html",
       "/poems/04-06-23-birds/index.html",
       "/poems/04-04-23-oranges/index.html",
@@ -102,6 +103,7 @@
   {
     "listing": "/posts.html",
     "items": [
+      "/posts/23-07-31-dog-days/index.html",
       "/posts/23-07-13-birdsong/index.html",
       "/posts/23-07-09-geese/index.html",
       "/posts/23-06-26-solstice/index.html",
