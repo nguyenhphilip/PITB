@@ -1,7 +1,7 @@
 ---
 title: "A dark night"
 subtitle: "of the soul"
-date: "10-21-23"
+date: "10-24-23"
 title-block-banner: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "On social performing"
-date: "10-09-23"
+date: "10-16-23"
 title-block-banner: false
 ---
 
