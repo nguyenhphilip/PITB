@@ -11,6 +11,9 @@
     ],
     "posts.qmd": [
       "posts"
+    ],
+    "diary.qmd": [
+      "diary"
     ]
   }
 }

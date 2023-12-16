@@ -216,5 +216,11 @@
       "/posts/0c-Introduction/index.html",
       "/posts/beliefs-we-harbor/index.html"
     ]
+  },
+  {
+    "listing": "/diary.html",
+    "items": [
+      "/diary/23-12-25-d/index.html"
+    ]
   }
 ]
