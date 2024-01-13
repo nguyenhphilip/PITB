@@ -111,6 +111,9 @@
   {
     "listing": "/posts.html",
     "items": [
+      "/posts/23-12-31-categories/index.html",
+      "/posts/23-12-26-holiday-reflections/index.html",
+      "/posts/23-12-22-looking-ahead/index.html",
       "/posts/23-12-01-past-lives/index.html",
       "/posts/23-11-24-morning-walk/index.html",
       "/posts/23-11-22-thanksgiving/index.html",
@@ -220,7 +223,8 @@
   {
     "listing": "/diary.html",
     "items": [
-      "/diary/23-12-25-d/index.html"
+      "/diary/23-12-17-d/index.html",
+      "/diary/23-12-15-d/index.html"
     ]
   }
 ]
