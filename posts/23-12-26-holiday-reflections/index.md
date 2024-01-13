@@ -4,11 +4,9 @@ date: "12-26-23"
 title-block-banner: false
 ---
 
-Allow yourself to drop everything just to see who you become.
-
 ![](https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F688629c0-d149-4b67-bc09-ef745701c95a_4032x3024.jpeg)
 
-Since my undergrad days (over a decade ago!), I’ve lived far away from the place of my upbringing. I’m reminded of how unusual this is every year when I visit for the holidays. Most of my family—including my extended family—live within an hour’s drive of each other. Meanwhile I’m situated across the country in Vermont, a state that’s quite [sparse](https://www.youtube.com/watch?v=nKcUOUYzDXA) in terms of Vietnamese people.
+Since my undergrad days (over a decade ago!), I’ve lived far away from the place of my upbringing. I’m reminded of how unusual this is every year when I visit for the holidays. Most of my family—including my extended family—live within an hour’s drive of each other. Meanwhile I’m situated across the country in Vermont, a state that’s quite sparse in terms of Vietnamese people.
 
 This puts me at a distance from them, though I can’t say we were ever really close, even when I was physically present in my youth. Often there was drama of some kind that I escaped through reading, friends, and video games. Only later, after I had moved out and individuated on my own, did I realize that I wasn’t alone in my struggle to connect on a deeper emotional level with my family.
 
