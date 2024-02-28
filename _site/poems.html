@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.280">
+<meta name="generator" content="quarto-1.4.542">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -17,7 +17,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -48,7 +48,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -57,8 +63,10 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script>
@@ -71,9 +79,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-freeze','listing-title-block-banner','listing-title','listing-date','listing-categories','listing-path','listing-author','listing-image','listing-description','listing-filename','listing-file-modified','listing-reading-time','listing-subtitle',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] }],
+      valueNames: ['listing-project','listing-website','listing-format','listing-language','listing-freeze','listing-title-block-banner','listing-title','listing-date','listing-categories','listing-path','listing-outputHref','listing-date-modified','listing-author','listing-description','listing-filename','listing-file-modified','listing-reading-time','listing-word-count','listing-subtitle',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
       
-      searchColumns: ["listing-freeze","listing-title-block-banner","listing-title","listing-date","listing-categories","listing-path","listing-author","listing-image","listing-description","listing-filename","listing-file-modified","listing-reading-time","listing-subtitle"],
+      searchColumns: ["listing-project","listing-website","listing-format","listing-language","listing-freeze","listing-title-block-banner","listing-title","listing-date","listing-categories","listing-path","listing-outputHref","listing-date-modified","listing-author","listing-description","listing-filename","listing-file-modified","listing-reading-time","listing-word-count","listing-subtitle"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -91,7 +99,35 @@ ul.task-list li input[type="checkbox"] {
   })
   </script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 <meta name="twitter:title" content="Phil in the Blank -">
@@ -103,20 +139,22 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Phil in the Blank</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./poems.html">Poems</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
     </div>
   </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-end sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Phil in the Blank</a> 
     </div>
@@ -125,32 +163,38 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./posts.html" class="sidebar-item-text sidebar-link">Posts</a>
+  <a href="./posts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Posts</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./poems.html" class="sidebar-item-text sidebar-link active">Poems</a>
+  <a href="./poems.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Poems</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./projects.html" class="sidebar-item-text sidebar-link">Projects</a>
+  <a href="./projects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Projects</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./notes.html" class="sidebar-item-text sidebar-link">Notes</a>
+  <a href="./notes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">About</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
   </div>
 </li>
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     
 <!-- main -->
@@ -162,9 +206,11 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+
 <div class="quarto-listing quarto-listing-container-custom" id="listing-listing">
 <div class="list">
-  <div style="display: block; margin-bottom: 0.15em;" data-index="0" data-categories="poem,delights" data-listing-date-sort="1698724800000" data-listing-file-modified-sort="1698849872255" data-listing-reading-time-sort="0.565">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="0" data-categories="poem,delights" data-listing-date-sort="1698724800000" data-listing-file-modified-sort="1698849872255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="113">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 31, 2023</span>
     </div>
@@ -172,7 +218,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-11-01-the-heart-aches/index.html">The heart aches</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="1" data-categories="poem,delights" data-listing-date-sort="1698552000000" data-listing-file-modified-sort="1698849771648" data-listing-reading-time-sort="0.735">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="1" data-categories="poem,delights" data-listing-date-sort="1698552000000" data-listing-file-modified-sort="1698849771648" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="147">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 29, 2023</span>
     </div>
@@ -180,7 +227,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-10-29-afterparty/index.html">After the party</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="2" data-categories="poem,delights" data-listing-date-sort="1698292800000" data-listing-file-modified-sort="1702782746709" data-listing-reading-time-sort="0.185">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="2" data-categories="poem,delights" data-listing-date-sort="1698292800000" data-listing-file-modified-sort="1702782746709" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="37">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 26, 2023</span>
     </div>
@@ -188,7 +236,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-10-26-toes/index.html">toes</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="3" data-categories="poem,delights" data-listing-date-sort="1697256000000" data-listing-file-modified-sort="1698849621215" data-listing-reading-time-sort="0.34">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="3" data-categories="poem,delights" data-listing-date-sort="1697256000000" data-listing-file-modified-sort="1698849621215" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="68">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 14, 2023</span>
     </div>
@@ -196,7 +245,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-10-14-beautiful/index.html">Beautiful</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="4" data-categories="poem,delights" data-listing-date-sort="1697169600000" data-listing-file-modified-sort="1698849516974" data-listing-reading-time-sort="0.63">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="4" data-categories="poem,delights" data-listing-date-sort="1697169600000" data-listing-file-modified-sort="1698849516974" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="126">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 13, 2023</span>
     </div>
@@ -204,7 +254,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-10-13-fly/index.html">Fly in a café</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="5" data-categories="poem,delights" data-listing-date-sort="1697083200000" data-listing-file-modified-sort="1698849497816" data-listing-reading-time-sort="0.825">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="5" data-categories="poem,delights" data-listing-date-sort="1697083200000" data-listing-file-modified-sort="1698849497816" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="165">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 12, 2023</span>
     </div>
@@ -212,7 +263,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-10-12-questions-man/index.html">Questions for the man</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="6" data-categories="delights" data-listing-date-sort="1693368000000" data-listing-file-modified-sort="1693573459009" data-listing-reading-time-sort="1.05">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="6" data-categories="delights" data-listing-date-sort="1693368000000" data-listing-file-modified-sort="1693573459009" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="210">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 30, 2023</span>
     </div>
@@ -220,7 +272,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-08-30-fiveam/index.html">5AM</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="7" data-categories="delights" data-listing-date-sort="1692590400000" data-listing-file-modified-sort="1693573495968" data-listing-reading-time-sort="1.23">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="7" data-categories="delights" data-listing-date-sort="1692590400000" data-listing-file-modified-sort="1693573495968" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="246">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 21, 2023</span>
     </div>
@@ -228,7 +281,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-08-21-quebec/index.html">A poem for Québec</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="8" data-categories="poem,delights" data-listing-date-sort="1691208000000" data-listing-file-modified-sort="1691246224512" data-listing-reading-time-sort="0.65">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="8" data-categories="poem,delights" data-listing-date-sort="1691208000000" data-listing-file-modified-sort="1691246224512" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="130">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 5, 2023</span>
     </div>
@@ -236,7 +290,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/23-08-05-running/index.html">Running</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="9" data-categories="life,delights" data-listing-date-sort="1681099200000" data-listing-file-modified-sort="1681347044750" data-listing-reading-time-sort="0.38">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="9" data-categories="life,delights" data-listing-date-sort="1681099200000" data-listing-file-modified-sort="1681347044750" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="76">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Apr 10, 2023</span>
     </div>
@@ -244,7 +299,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/04-10-23-RRR/index.html">Lessons from RRR</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="10" data-categories="life,delights" data-listing-date-sort="1680753600000" data-listing-file-modified-sort="1680908185269" data-listing-reading-time-sort="0.42">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="10" data-categories="life,delights" data-listing-date-sort="1680753600000" data-listing-file-modified-sort="1680908185269" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="84">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Apr 6, 2023</span>
     </div>
@@ -252,7 +308,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/04-06-23-birds/index.html">Birds</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="11" data-categories="life,delights" data-listing-date-sort="1680580800000" data-listing-file-modified-sort="1680908616508" data-listing-reading-time-sort="0.205">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="11" data-categories="life,delights" data-listing-date-sort="1680580800000" data-listing-file-modified-sort="1680908616508" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="41">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Apr 4, 2023</span>
     </div>
@@ -260,7 +317,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/04-04-23-oranges/index.html">Oranges</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="12" data-categories="life,delights" data-listing-date-sort="1678510800000" data-listing-file-modified-sort="1678553507125" data-listing-reading-time-sort="0.905">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="12" data-categories="life,delights" data-listing-date-sort="1678510800000" data-listing-file-modified-sort="1678553507125" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="181">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Mar 11, 2023</span>
     </div>
@@ -268,7 +326,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/03-11-23-boxelder/index.html">Boxelder bugs</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="13" data-categories="poems" data-listing-date-sort="1668229200000" data-listing-file-modified-sort="1669689604068" data-listing-reading-time-sort="0.745">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="13" data-categories="poems" data-listing-date-sort="1668229200000" data-listing-file-modified-sort="1669689604068" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="149">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Nov 12, 2022</span>
     </div>
@@ -276,7 +335,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/11-12-22-spider/index.html">Spider</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="14" data-categories="poems" data-listing-date-sort="1668056400000" data-listing-file-modified-sort="1669689511384" data-listing-reading-time-sort="0.53">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="14" data-categories="poems" data-listing-date-sort="1668056400000" data-listing-file-modified-sort="1669689511384" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="106">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Nov 10, 2022</span>
     </div>
@@ -284,7 +344,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/11-10-22-crevasses/index.html">Crevasses</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="15" data-categories="poems" data-listing-date-sort="1664769600000" data-listing-file-modified-sort="1666441122054" data-listing-reading-time-sort="0.375">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="15" data-categories="poems" data-listing-date-sort="1664769600000" data-listing-file-modified-sort="1666441122054" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="75">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 3, 2022</span>
     </div>
@@ -292,7 +353,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/10-03-22-lifes-work/index.html">My life's work</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="16" data-categories="poems" data-listing-date-sort="1664769600000" data-listing-file-modified-sort="1666440659627" data-listing-reading-time-sort="0.455">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="16" data-categories="poems" data-listing-date-sort="1664769600000" data-listing-file-modified-sort="1666440659627" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="91">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 3, 2022</span>
     </div>
@@ -300,7 +362,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/10-03-22-questions/index.html">Live the questions</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="17" data-categories="poems" data-listing-date-sort="1664424000000" data-listing-file-modified-sort="1666440565112" data-listing-reading-time-sort="0.385">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="17" data-categories="poems" data-listing-date-sort="1664424000000" data-listing-file-modified-sort="1666440565112" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="77">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Sep 29, 2022</span>
     </div>
@@ -308,7 +371,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/09-29-22-sometimes/index.html">Sometimes</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="18" data-categories="poems" data-listing-date-sort="1663905600000" data-listing-file-modified-sort="1666440477729" data-listing-reading-time-sort="1.265">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="18" data-categories="poems" data-listing-date-sort="1663905600000" data-listing-file-modified-sort="1666440477729" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="253">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Sep 23, 2022</span>
     </div>
@@ -316,7 +380,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/09-23-22-neighbor-El/index.html">My Neighbor El</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="19" data-categories="poems" data-listing-date-sort="1663646400000" data-listing-file-modified-sort="1666441078639" data-listing-reading-time-sort="0.68">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="19" data-categories="poems" data-listing-date-sort="1663646400000" data-listing-file-modified-sort="1666441078639" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="136">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Sep 20, 2022</span>
     </div>
@@ -324,7 +389,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/09-20-22-haunts/index.html">Old Haunts</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="20" data-categories="poems" data-listing-date-sort="1661745600000" data-listing-file-modified-sort="1666440051339" data-listing-reading-time-sort="0.38">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="20" data-categories="poems" data-listing-date-sort="1661745600000" data-listing-file-modified-sort="1666440051339" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="76">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 29, 2022</span>
     </div>
@@ -332,7 +398,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/08-29-22-grace/index.html">With grace</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="21" data-categories="poems" data-listing-date-sort="1661659200000" data-listing-file-modified-sort="1666439980593" data-listing-reading-time-sort="0.63">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="21" data-categories="poems" data-listing-date-sort="1661659200000" data-listing-file-modified-sort="1666439980593" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="126">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 28, 2022</span>
     </div>
@@ -340,7 +407,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/08-28-22-hunger/index.html">hunger</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="22" data-categories="poems" data-listing-date-sort="1660622400000" data-listing-file-modified-sort="1666439880859" data-listing-reading-time-sort="0.53">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="22" data-categories="poems" data-listing-date-sort="1660622400000" data-listing-file-modified-sort="1666439880859" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="106">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 16, 2022</span>
     </div>
@@ -348,7 +416,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/08-16-22-let-go-not/index.html">How not to let go</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="23" data-categories="poems" data-listing-date-sort="1660449600000" data-listing-file-modified-sort="1666441043860" data-listing-reading-time-sort="0.425">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="23" data-categories="poems" data-listing-date-sort="1660449600000" data-listing-file-modified-sort="1666441043860" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="85">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 14, 2022</span>
     </div>
@@ -356,7 +425,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/08-14-22-vietnamese/index.html">Vietnamese-American</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="24" data-categories="poems" data-listing-date-sort="1660276800000" data-listing-file-modified-sort="1666439727914" data-listing-reading-time-sort="0.435">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="24" data-categories="poems" data-listing-date-sort="1660276800000" data-listing-file-modified-sort="1666439727914" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="87">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 12, 2022</span>
     </div>
@@ -364,7 +434,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/08-12-22-petty/index.html">Petty</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="25" data-categories="poems" data-listing-date-sort="1660190400000" data-listing-file-modified-sort="1666439635441" data-listing-reading-time-sort="1.1">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="25" data-categories="poems" data-listing-date-sort="1660190400000" data-listing-file-modified-sort="1666439635441" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="220">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 11, 2022</span>
     </div>
@@ -372,7 +443,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/08-11-22-things-im-not/index.html">Things I'm Not Telling Myself</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="26" data-categories="poems" data-listing-date-sort="1658635200000" data-listing-file-modified-sort="1658668318931" data-listing-reading-time-sort="0.665">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="26" data-categories="poems" data-listing-date-sort="1658635200000" data-listing-file-modified-sort="1658668318931" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="133">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jul 24, 2022</span>
     </div>
@@ -380,7 +452,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/07-24-22-oatmeal/index.html">Oatmeal</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="27" data-categories="poems" data-listing-date-sort="1656820800000" data-listing-file-modified-sort="1657894499295" data-listing-reading-time-sort="0.35">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="27" data-categories="poems" data-listing-date-sort="1656820800000" data-listing-file-modified-sort="1657894499295" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="70">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jul 3, 2022</span>
     </div>
@@ -388,7 +461,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/07-03-22-chaos/index.html">Chaos</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="28" data-categories="poems" data-listing-date-sort="1651204800000" data-listing-file-modified-sort="1657894336011" data-listing-reading-time-sort="0.305">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="28" data-categories="poems" data-listing-date-sort="1651204800000" data-listing-file-modified-sort="1657894336011" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="61">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Apr 29, 2022</span>
     </div>
@@ -396,7 +470,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/morning/index.html">Morning</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="29" data-categories="poems" data-listing-date-sort="1639285200000" data-listing-file-modified-sort="1652796512000" data-listing-reading-time-sort="0.505">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="29" data-categories="poems" data-listing-date-sort="1639285200000" data-listing-file-modified-sort="1652796512000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="101">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Dec 12, 2021</span>
     </div>
@@ -404,7 +479,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/hands/index.html">Hands</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="30" data-categories="poems" data-listing-date-sort="1627531200000" data-listing-file-modified-sort="1652795871000" data-listing-reading-time-sort="0.325">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="30" data-categories="poems" data-listing-date-sort="1627531200000" data-listing-file-modified-sort="1652795871000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="65">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jul 29, 2021</span>
     </div>
@@ -412,7 +488,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/papa/index.html">Dad</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="31" data-categories="poems" data-listing-date-sort="1626580800000" data-listing-file-modified-sort="1652794656000" data-listing-reading-time-sort="0.48">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="31" data-categories="poems" data-listing-date-sort="1626580800000" data-listing-file-modified-sort="1652794656000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="96">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jul 18, 2021</span>
     </div>
@@ -420,7 +497,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/waiting/index.html">Waiting</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="32" data-categories="poems" data-listing-date-sort="1622952000000" data-listing-file-modified-sort="1652796446000" data-listing-reading-time-sort="0.305">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="32" data-categories="poems" data-listing-date-sort="1622952000000" data-listing-file-modified-sort="1652796446000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="61">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jun 6, 2021</span>
     </div>
@@ -428,7 +506,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/how-i-know/index.html">How I Know</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="33" data-categories="poems" data-listing-date-sort="1617076800000" data-listing-file-modified-sort="1652796483000" data-listing-reading-time-sort="0.125">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="33" data-categories="poems" data-listing-date-sort="1617076800000" data-listing-file-modified-sort="1652796483000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="25">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Mar 30, 2021</span>
     </div>
@@ -436,7 +515,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/hope/index.html">Hope</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="34" data-categories="poems" data-listing-date-sort="1611982800000" data-listing-file-modified-sort="1652794732000" data-listing-reading-time-sort="0.53">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="34" data-categories="poems" data-listing-date-sort="1611982800000" data-listing-file-modified-sort="1652794732000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="106">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jan 30, 2021</span>
     </div>
@@ -444,7 +524,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/Vaccine/index.html">Vaccine</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="35" data-categories="poems" data-listing-date-sort="1607835600000" data-listing-file-modified-sort="1652796802000" data-listing-reading-time-sort="0.57">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="35" data-categories="poems" data-listing-date-sort="1607835600000" data-listing-file-modified-sort="1652796802000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="114">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Dec 13, 2020</span>
     </div>
@@ -452,7 +533,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/evanescent/index.html">Evanescent</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="36" data-categories="poems" data-listing-date-sort="1606539600000" data-listing-file-modified-sort="1652794585000" data-listing-reading-time-sort="0.4">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="36" data-categories="poems" data-listing-date-sort="1606539600000" data-listing-file-modified-sort="1652794585000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="80">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Nov 28, 2020</span>
     </div>
@@ -460,7 +542,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/waiting-for/index.html">Waiting</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="37" data-categories="poems" data-listing-date-sort="1604725200000" data-listing-file-modified-sort="1652795559000" data-listing-reading-time-sort="1.31">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="37" data-categories="poems" data-listing-date-sort="1604725200000" data-listing-file-modified-sort="1652795559000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="262">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Nov 7, 2020</span>
     </div>
@@ -468,7 +551,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/prayer/index.html">A Prayer</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="38" data-categories="poems" data-listing-date-sort="1603598400000" data-listing-file-modified-sort="1652796683000" data-listing-reading-time-sort="0.47">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="38" data-categories="poems" data-listing-date-sort="1603598400000" data-listing-file-modified-sort="1652796683000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="94">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 25, 2020</span>
     </div>
@@ -476,7 +560,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/fam/index.html">Family</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="39" data-categories="poems" data-listing-date-sort="1603598400000" data-listing-file-modified-sort="1652794524000" data-listing-reading-time-sort="0.67">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="39" data-categories="poems" data-listing-date-sort="1603598400000" data-listing-file-modified-sort="1652794524000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="134">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 25, 2020</span>
     </div>
@@ -484,7 +569,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/while-the-world-sleeps/index.html">While the world sleeps</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="40" data-categories="poems" data-listing-date-sort="1603512000000" data-listing-file-modified-sort="1652796369000" data-listing-reading-time-sort="0.395">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="40" data-categories="poems" data-listing-date-sort="1603512000000" data-listing-file-modified-sort="1652796369000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="79">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 24, 2020</span>
     </div>
@@ -492,7 +578,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/ingredients/index.html">Ingredients</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="41" data-categories="poems" data-listing-date-sort="1602820800000" data-listing-file-modified-sort="1652795698000" data-listing-reading-time-sort="0.76">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="41" data-categories="poems" data-listing-date-sort="1602820800000" data-listing-file-modified-sort="1652795698000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="152">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 16, 2020</span>
     </div>
@@ -500,7 +587,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/pause/index.html">Pause</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="42" data-categories="poems" data-listing-date-sort="1602820800000" data-listing-file-modified-sort="1652795659000" data-listing-reading-time-sort="1.275">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="42" data-categories="poems" data-listing-date-sort="1602820800000" data-listing-file-modified-sort="1652795659000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="255">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 16, 2020</span>
     </div>
@@ -508,7 +596,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/possibilities/index.html">Forgive Me Szymborska</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="43" data-categories="poems" data-listing-date-sort="1601956800000" data-listing-file-modified-sort="1652794699000" data-listing-reading-time-sort="0.29">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="43" data-categories="poems" data-listing-date-sort="1601956800000" data-listing-file-modified-sort="1652794699000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="58">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 6, 2020</span>
     </div>
@@ -516,7 +605,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/vulnerability/index.html">Vulnerability</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="44" data-categories="poems" data-listing-date-sort="1598328000000" data-listing-file-modified-sort="1652796250000" data-listing-reading-time-sort="1.245">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="44" data-categories="poems" data-listing-date-sort="1598328000000" data-listing-file-modified-sort="1652796250000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="249">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 25, 2020</span>
     </div>
@@ -524,7 +614,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/kintsugi/index.html">Kintsugi</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="45" data-categories="poems" data-listing-date-sort="1598155200000" data-listing-file-modified-sort="1652796629000" data-listing-reading-time-sort="0.21">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="45" data-categories="poems" data-listing-date-sort="1598155200000" data-listing-file-modified-sort="1652796629000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="42">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 23, 2020</span>
     </div>
@@ -532,7 +623,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/for-a-friend/index.html">Meeting Again</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="46" data-categories="poems" data-listing-date-sort="1596859200000" data-listing-file-modified-sort="1652797008000" data-listing-reading-time-sort="0.95">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="46" data-categories="poems" data-listing-date-sort="1596859200000" data-listing-file-modified-sort="1652797008000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="190">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 8, 2020</span>
     </div>
@@ -540,7 +632,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/27/index.html">27 Years</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="47" data-categories="poems" data-listing-date-sort="1596427200000" data-listing-file-modified-sort="1652795198000" data-listing-reading-time-sort="0.53">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="47" data-categories="poems" data-listing-date-sort="1596427200000" data-listing-file-modified-sort="1652795198000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="106">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Aug 3, 2020</span>
     </div>
@@ -548,7 +641,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/singularity/index.html">Singularity</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="48" data-categories="poems" data-listing-date-sort="1595390400000" data-listing-file-modified-sort="1652796889000" data-listing-reading-time-sort="0.56">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="48" data-categories="poems" data-listing-date-sort="1595390400000" data-listing-file-modified-sort="1652796889000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="112">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jul 22, 2020</span>
     </div>
@@ -556,7 +650,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/calluses/index.html">Calluses</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="49" data-categories="poems" data-listing-date-sort="1593489600000" data-listing-file-modified-sort="1652796600000" data-listing-reading-time-sort="0.515">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="49" data-categories="poems" data-listing-date-sort="1593489600000" data-listing-file-modified-sort="1652796600000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="103">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jun 30, 2020</span>
     </div>
@@ -564,7 +659,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/forever-light/index.html">My Light</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="50" data-categories="poems" data-listing-date-sort="1592712000000" data-listing-file-modified-sort="1652795082000" data-listing-reading-time-sort="0.54">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="50" data-categories="poems" data-listing-date-sort="1592712000000" data-listing-file-modified-sort="1652795082000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="108">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jun 21, 2020</span>
     </div>
@@ -572,7 +668,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/the-path-awaits/index.html">The Path Awaits</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="51" data-categories="poems" data-listing-date-sort="1592625600000" data-listing-file-modified-sort="1652796538000" data-listing-reading-time-sort="0.185">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="51" data-categories="poems" data-listing-date-sort="1592625600000" data-listing-file-modified-sort="1652796538000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="37">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jun 20, 2020</span>
     </div>
@@ -580,7 +677,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/frogs/index.html">Frogs</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="52" data-categories="poems" data-listing-date-sort="1592107200000" data-listing-file-modified-sort="1652796658000" data-listing-reading-time-sort="0.25">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="52" data-categories="poems" data-listing-date-sort="1592107200000" data-listing-file-modified-sort="1652796658000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="50">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jun 14, 2020</span>
     </div>
@@ -588,7 +686,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/footsteps/index.html">Footsteps</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="53" data-categories="poems" data-listing-date-sort="1592020800000" data-listing-file-modified-sort="1652796335000" data-listing-reading-time-sort="0.665">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="53" data-categories="poems" data-listing-date-sort="1592020800000" data-listing-file-modified-sort="1652796335000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="133">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jun 13, 2020</span>
     </div>
@@ -596,7 +695,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/just_kids/index.html">Just kids</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="54" data-categories="poems" data-listing-date-sort="1591848000000" data-listing-file-modified-sort="1652796126000" data-listing-reading-time-sort="0.5">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="54" data-categories="poems" data-listing-date-sort="1591848000000" data-listing-file-modified-sort="1652796126000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="100">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jun 11, 2020</span>
     </div>
@@ -604,7 +704,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/lady_red/index.html">Lady in Red</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="55" data-categories="poems" data-listing-date-sort="1591761600000" data-listing-file-modified-sort="1652795415000" data-listing-reading-time-sort="0.43">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="55" data-categories="poems" data-listing-date-sort="1591761600000" data-listing-file-modified-sort="1652795415000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="86">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jun 10, 2020</span>
     </div>
@@ -612,7 +713,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/remembering/index.html">Remembering</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="56" data-categories="poems" data-listing-date-sort="1590033600000" data-listing-file-modified-sort="1652795498000" data-listing-reading-time-sort="0.285">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="56" data-categories="poems" data-listing-date-sort="1590033600000" data-listing-file-modified-sort="1652795498000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="57">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 21, 2020</span>
     </div>
@@ -620,7 +722,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/probability/index.html">Probability</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="57" data-categories="poems" data-listing-date-sort="1589947200000" data-listing-file-modified-sort="1652794375000" data-listing-reading-time-sort="0.445">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="57" data-categories="poems" data-listing-date-sort="1589947200000" data-listing-file-modified-sort="1652794375000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="89">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 20, 2020</span>
     </div>
@@ -628,7 +731,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/yearning/index.html">Yearning</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="58" data-categories="poems" data-listing-date-sort="1589515200000" data-listing-file-modified-sort="1652796024000" data-listing-reading-time-sort="0.34">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="58" data-categories="poems" data-listing-date-sort="1589515200000" data-listing-file-modified-sort="1652796024000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="68">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 15, 2020</span>
     </div>
@@ -636,7 +740,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/lovers-trees/index.html">Lovers</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="59" data-categories="poems" data-listing-date-sort="1589342400000" data-listing-file-modified-sort="1652795360000" data-listing-reading-time-sort="0.435">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="59" data-categories="poems" data-listing-date-sort="1589342400000" data-listing-file-modified-sort="1652795360000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="87">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 13, 2020</span>
     </div>
@@ -644,7 +749,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/safe/index.html">Safe</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="60" data-categories="poems" data-listing-date-sort="1589256000000" data-listing-file-modified-sort="1652795472000" data-listing-reading-time-sort="0.425">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="60" data-categories="poems" data-listing-date-sort="1589256000000" data-listing-file-modified-sort="1652795472000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="85">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 12, 2020</span>
     </div>
@@ -652,7 +758,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/refuge/index.html">Refuge</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="61" data-categories="poems" data-listing-date-sort="1589169600000" data-listing-file-modified-sort="1652794972000" data-listing-reading-time-sort="0.46">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="61" data-categories="poems" data-listing-date-sort="1589169600000" data-listing-file-modified-sort="1652794972000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="92">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 11, 2020</span>
     </div>
@@ -660,7 +767,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/to-sky/index.html">To the Sky</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="62" data-categories="poems" data-listing-date-sort="1589083200000" data-listing-file-modified-sort="1652796941000" data-listing-reading-time-sort="0.49">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="62" data-categories="poems" data-listing-date-sort="1589083200000" data-listing-file-modified-sort="1652796941000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="98">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 10, 2020</span>
     </div>
@@ -668,7 +776,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/blue/index.html">Blue</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="63" data-categories="poems" data-listing-date-sort="1588910400000" data-listing-file-modified-sort="1652795953000" data-listing-reading-time-sort="0.205">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="63" data-categories="poems" data-listing-date-sort="1588910400000" data-listing-file-modified-sort="1652795953000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="41">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 8, 2020</span>
     </div>
@@ -676,7 +785,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/our-dream/index.html">Our Dream</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="64" data-categories="poems" data-listing-date-sort="1588824000000" data-listing-file-modified-sort="1652795904000" data-listing-reading-time-sort="0.335">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="64" data-categories="poems" data-listing-date-sort="1588824000000" data-listing-file-modified-sort="1652795904000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="67">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 7, 2020</span>
     </div>
@@ -684,7 +794,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/our-room/index.html">Our Room</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="65" data-categories="poems" data-listing-date-sort="1588737600000" data-listing-file-modified-sort="1652796160000" data-listing-reading-time-sort="0.42">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="65" data-categories="poems" data-listing-date-sort="1588737600000" data-listing-file-modified-sort="1652796160000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="84">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 6, 2020</span>
     </div>
@@ -692,7 +803,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/knowledge/index.html">Knowledge</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="66" data-categories="poems" data-listing-date-sort="1588651200000" data-listing-file-modified-sort="1652796395000" data-listing-reading-time-sort="0.465">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="66" data-categories="poems" data-listing-date-sort="1588651200000" data-listing-file-modified-sort="1652796395000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="93">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 5, 2020</span>
     </div>
@@ -700,7 +812,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/improvise/index.html">Improvise</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="67" data-categories="poems" data-listing-date-sort="1586750400000" data-listing-file-modified-sort="1652796965000" data-listing-reading-time-sort="0.325">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="67" data-categories="poems" data-listing-date-sort="1586750400000" data-listing-file-modified-sort="1652796965000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="65">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Apr 13, 2020</span>
     </div>
@@ -708,7 +821,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/Again/index.html">Again</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="68" data-categories="poems" data-listing-date-sort="1585627200000" data-listing-file-modified-sort="1652796068000" data-listing-reading-time-sort="0.2">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="68" data-categories="poems" data-listing-date-sort="1585627200000" data-listing-file-modified-sort="1652796068000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="40">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Mar 31, 2020</span>
     </div>
@@ -716,7 +830,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/Love/index.html">Love</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="69" data-categories="poems" data-listing-date-sort="1581310800000" data-listing-file-modified-sort="1652796849000" data-listing-reading-time-sort="0.54">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="69" data-categories="poems" data-listing-date-sort="1581310800000" data-listing-file-modified-sort="1652796849000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="108">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Feb 10, 2020</span>
     </div>
@@ -724,7 +839,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/dwell/index.html">Dwell</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="70" data-categories="poems" data-listing-date-sort="1580878800000" data-listing-file-modified-sort="1652796716000" data-listing-reading-time-sort="0.47">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="70" data-categories="poems" data-listing-date-sort="1580878800000" data-listing-file-modified-sort="1652796716000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="94">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Feb 5, 2020</span>
     </div>
@@ -732,7 +848,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/exhalation/index.html">Exhalation</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="71" data-categories="poems" data-listing-date-sort="1580619600000" data-listing-file-modified-sort="1652794908000" data-listing-reading-time-sort="0.615">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="71" data-categories="poems" data-listing-date-sort="1580619600000" data-listing-file-modified-sort="1652794908000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="123">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Feb 2, 2020</span>
     </div>
@@ -740,7 +857,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/trapeze/index.html">Trapeze</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="72" data-categories="poems" data-listing-date-sort="1578373200000" data-listing-file-modified-sort="1652795237000" data-listing-reading-time-sort="1">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="72" data-categories="poems" data-listing-date-sort="1578373200000" data-listing-file-modified-sort="1652795237000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="200">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jan 7, 2020</span>
     </div>
@@ -748,7 +866,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/shoestring/index.html">Shoestring</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="73" data-categories="poems" data-listing-date-sort="1570939200000" data-listing-file-modified-sort="1652796099000" data-listing-reading-time-sort="0.665">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="73" data-categories="poems" data-listing-date-sort="1570939200000" data-listing-file-modified-sort="1652796099000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="133">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Oct 13, 2019</span>
     </div>
@@ -756,7 +875,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/Listen/index.html">Listen</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="74" data-categories="poems" data-listing-date-sort="1557028800000" data-listing-file-modified-sort="1652795297000" data-listing-reading-time-sort="0.36">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="74" data-categories="poems" data-listing-date-sort="1557028800000" data-listing-file-modified-sort="1652795297000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="72">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 5, 2019</span>
     </div>
@@ -764,7 +884,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/seagulls/index.html">Seagulls</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="75" data-categories="poems" data-listing-date-sort="1557028800000" data-listing-file-modified-sort="1652796825000" data-listing-reading-time-sort="0.55">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="75" data-categories="poems" data-listing-date-sort="1557028800000" data-listing-file-modified-sort="1652796825000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="110">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">May 5, 2019</span>
     </div>
@@ -772,7 +893,8 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/enough/index.html">Enough</a>
     </div>
   </div>
-  <div style="display: block; margin-bottom: 0.15em;" data-index="76" data-categories="poems" data-listing-date-sort="1514782800000" data-listing-file-modified-sort="1652794335000" data-listing-reading-time-sort="0.335">
+
+  <div style="display: block; margin-bottom: 0.15em;" data-index="76" data-categories="poems" data-listing-date-sort="1514782800000" data-listing-file-modified-sort="1652794335000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="67">
     <div style="display: inline-block; float: right;">
       <span style="color:gray; font-size:small;">Jan 1, 2018</span>
     </div>
@@ -780,6 +902,7 @@ ul.task-list li input[type="checkbox"] {
       <a style="display: inline-block;" href="./poems/winter/index.html">Winter</a>
     </div>
   </div>
+
 </div>
 <div class="listing-no-matching d-none">
 No matching items
@@ -812,9 +935,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -850,10 +987,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -863,8 +999,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -879,6 +1024,233 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -919,6 +1291,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 

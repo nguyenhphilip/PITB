@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.280">
+<meta name="generator" content="quarto-1.4.542">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -17,7 +17,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -48,7 +48,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -57,8 +63,10 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script>
@@ -92,7 +100,35 @@ ul.task-list li input[type="checkbox"] {
   })
   </script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 <meta name="twitter:title" content="Phil in the Blank -">
@@ -104,20 +140,22 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Phil in the Blank</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./projects.html">Projects</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
     </div>
   </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-end sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Phil in the Blank</a> 
     </div>
@@ -126,32 +164,38 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./posts.html" class="sidebar-item-text sidebar-link">Posts</a>
+  <a href="./posts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Posts</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./poems.html" class="sidebar-item-text sidebar-link">Poems</a>
+  <a href="./poems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Poems</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./projects.html" class="sidebar-item-text sidebar-link active">Projects</a>
+  <a href="./projects.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Projects</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./notes.html" class="sidebar-item-text sidebar-link">Notes</a>
+  <a href="./notes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">About</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
   </div>
 </li>
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     
 <!-- main -->
@@ -163,27 +207,28 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-date-sort="1671426000000" data-listing-file-modified-sort="1673031229451" data-listing-reading-time-sort="64.99">
+<div class="quarto-post image-right" data-index="0" data-listing-date-sort="1671426000000" data-listing-file-modified-sort="1673031229451" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="65" data-listing-word-count-sort="12998">
 <div class="thumbnail">
-<p><a href="./projects/resilience-imagen/index.html"> <img src="./projects/resilience-imagen/index_files/figure-html/tds-contrast-1.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/resilience-imagen/index.html" class="no-external"></a></p><a href="./projects/resilience-imagen/index.html" class="no-external">
+<p><img src="./projects/resilience-imagen/index_files/figure-html/tds-contrast-1.png" class="thumbnail-image"></p>
+</a><p><a href="./projects/resilience-imagen/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/resilience-imagen/index.html">
 <h3 class="no-anchor listing-title">
-Predicting mental health and substance use in adulthood from resilience in adolescence
+<a href="./projects/resilience-imagen/index.html" class="no-external">Predicting mental health and substance use in adulthood from resilience in adolescence</a>
 </h3>
 <div class="listing-subtitle">
-Bayes. Mediation. Ordinal regression. Lots of data.
+<a href="./projects/resilience-imagen/index.html" class="no-external">Bayes. Mediation. Ordinal regression. Lots of data.</a>
 </div>
 <div class="listing-description">
-<p>In this project I explore whether resilience in adolescence is predictive of various outcomes in…</p>
+<a href="./projects/resilience-imagen/index.html" class="no-external">In this project I explore whether resilience in adolescence is predictive of various outcomes in…</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/resilience-imagen/index.html">
+<a href="./projects/resilience-imagen/index.html" class="no-external">
 <div class="listing-date">
 Dec 19, 2022
 </div>
@@ -193,304 +238,300 @@ Philip Nguyen
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="1" data-categories="ABCD,R,networks" data-listing-date-sort="1640667600000" data-listing-file-modified-sort="1652749547000" data-listing-reading-time-sort="0.415">
+<div class="quarto-post image-right" data-index="1" data-categories="ABCD,R,networks" data-listing-date-sort="1640667600000" data-listing-file-modified-sort="1652749547000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="83">
 <div class="thumbnail">
-<p><a href="./projects/POCS-MH-nets/index.html"> <img src="./projects/POCS-MH-nets/mh-net1.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/POCS-MH-nets/index.html" class="no-external"></a></p><a href="./projects/POCS-MH-nets/index.html" class="no-external">
+<p class="card-img-top"><img src="projects/POCS-MH-nets/mh-net1.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/POCS-MH-nets/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/POCS-MH-nets/index.html">
 <h3 class="no-anchor listing-title">
-Exploring Mental Health Networks
+<a href="./projects/POCS-MH-nets/index.html" class="no-external">Exploring Mental Health Networks</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/POCS-MH-nets/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>This is a brief project where I look at mental health symptom networks in a large sample of youth…</p>
+<a href="./projects/POCS-MH-nets/index.html" class="no-external">This is a brief project where I look at mental health symptom networks in a large sample of youth…</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/POCS-MH-nets/index.html">
+<a href="./projects/POCS-MH-nets/index.html" class="no-external">
 <div class="listing-date">
 Dec 28, 2021
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="2" data-categories="Python,R" data-listing-date-sort="1640581200000" data-listing-file-modified-sort="1652749764000" data-listing-reading-time-sort="0.26">
+<div class="quarto-post image-right" data-index="2" data-categories="Python,R" data-listing-date-sort="1640581200000" data-listing-file-modified-sort="1652749764000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="52">
 <div class="thumbnail">
-<p><a href="./projects/Bayesian-PCA/index.html"> <img src="./projects/Bayesian-PCA/bpca1.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/Bayesian-PCA/index.html" class="no-external"></a></p><a href="./projects/Bayesian-PCA/index.html" class="no-external">
+<p class="card-img-top"><img src="projects/Bayesian-PCA/bpca1.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/Bayesian-PCA/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/Bayesian-PCA/index.html">
 <h3 class="no-anchor listing-title">
-Bayesian PCA
+<a href="./projects/Bayesian-PCA/index.html" class="no-external">Bayesian PCA</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/Bayesian-PCA/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>Exploring Bayesian PCA on two datasets.</p>
+<a href="./projects/Bayesian-PCA/index.html" class="no-external">Exploring Bayesian PCA on two datasets.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/Bayesian-PCA/index.html">
+<a href="./projects/Bayesian-PCA/index.html" class="no-external">
 <div class="listing-date">
 Dec 27, 2021
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="3" data-categories="R,TV Tropes" data-listing-date-sort="1620187200000" data-listing-file-modified-sort="1652749737000" data-listing-reading-time-sort="0.275">
+<div class="quarto-post image-right" data-index="3" data-categories="R,TV Tropes" data-listing-date-sort="1620187200000" data-listing-file-modified-sort="1652749737000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="55">
 <div class="thumbnail">
-<p><a href="./projects/Character-Space/index.html"> <img src="./projects/Character-Space/cspace1.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/Character-Space/index.html" class="no-external"></a></p><a href="./projects/Character-Space/index.html" class="no-external">
+<p class="card-img-top"><img src="projects/Character-Space/cspace1.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/Character-Space/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/Character-Space/index.html">
 <h3 class="no-anchor listing-title">
-Character Space &amp; TV Tropes
+<a href="./projects/Character-Space/index.html" class="no-external">Character Space &amp; TV Tropes</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/Character-Space/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>More TV Tropes.</p>
+<a href="./projects/Character-Space/index.html" class="no-external">More TV Tropes.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/Character-Space/index.html">
+<a href="./projects/Character-Space/index.html" class="no-external">
 <div class="listing-date">
 May 5, 2021
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="4" data-categories="data science,Spotify" data-listing-date-sort="1608354000000" data-listing-file-modified-sort="1652749463000" data-listing-reading-time-sort="4.235">
+<div class="quarto-post image-right" data-index="4" data-categories="data science,Spotify" data-listing-date-sort="1608354000000" data-listing-file-modified-sort="1652749463000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="847">
 <div class="thumbnail">
-<p><a href="./projects/spotify-top100/index.html"> <img src="./projects/spotify-top100/pressure-1.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/spotify-top100/index.html" class="no-external"></a></p><a href="./projects/spotify-top100/index.html" class="no-external">
+<p class="card-img-top"><img src="projects/spotify-top100/pressure-1.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/spotify-top100/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/spotify-top100/index.html">
 <h3 class="no-anchor listing-title">
-Spotify Top 100 Songs Analysis
+<a href="./projects/spotify-top100/index.html" class="no-external">Spotify Top 100 Songs Analysis</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/spotify-top100/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>A quick analysis of how my music listening has changed on Spotify.</p>
+<a href="./projects/spotify-top100/index.html" class="no-external">A quick analysis of how my music listening has changed on Spotify.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/spotify-top100/index.html">
+<a href="./projects/spotify-top100/index.html" class="no-external">
 <div class="listing-date">
 Dec 19, 2020
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="5" data-categories="networks,data science,tv tropes" data-listing-date-sort="1607662800000" data-listing-file-modified-sort="1652749434000" data-listing-reading-time-sort="0.225">
+<div class="quarto-post image-right" data-index="5" data-categories="networks,data science,tv tropes" data-listing-date-sort="1607662800000" data-listing-file-modified-sort="1652749434000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="45">
 <div class="thumbnail">
-<p><a href="./projects/tv-tropes/index.html"> <img data-src="./projects/tv-tropes/top_100nodes_6communities.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/tv-tropes/index.html" class="no-external"></a></p><a href="./projects/tv-tropes/index.html" class="no-external">
+<p><img data-src="./projects/tv-tropes/top_100nodes_6communities.png" class="thumbnail-image"></p>
+</a><p><a href="./projects/tv-tropes/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/tv-tropes/index.html">
 <h3 class="no-anchor listing-title">
-Data Science I Final Project: TV Tropes
+<a href="./projects/tv-tropes/index.html" class="no-external">Data Science I Final Project: TV Tropes</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/tv-tropes/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>Web scraping, TV Tropes, network analysis.</p>
+<a href="./projects/tv-tropes/index.html" class="no-external">Web scraping, TV Tropes, network analysis.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/tv-tropes/index.html">
+<a href="./projects/tv-tropes/index.html" class="no-external">
 <div class="listing-date">
 Dec 11, 2020
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="6" data-categories="R,Shiny,COVID" data-listing-date-sort="1587960000000" data-listing-file-modified-sort="1652749597000" data-listing-reading-time-sort="1.09">
+<div class="quarto-post image-right" data-index="6" data-categories="R,Shiny,COVID" data-listing-date-sort="1587960000000" data-listing-file-modified-sort="1652749597000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="218">
 <div class="thumbnail">
-<p><a href="./projects/life-after/index.html"> <img data-src="./projects/life-after/life-after.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/life-after/index.html" class="no-external"></a></p><a href="./projects/life-after/index.html" class="no-external">
+<p class="card-img-top"><img data-src="projects/life-after/life-after.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/life-after/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/life-after/index.html">
 <h3 class="no-anchor listing-title">
-Life After: A #NET-COVID Survey of Beliefs
+<a href="./projects/life-after/index.html" class="no-external">Life After: A #NET-COVID Survey of Beliefs</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/life-after/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>The Life After project is a survey of beliefs about what people believe the world will look like…</p>
+<a href="./projects/life-after/index.html" class="no-external">The Life After project is a survey of beliefs about what people believe the world will look like…</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/life-after/index.html">
+<a href="./projects/life-after/index.html" class="no-external">
 <div class="listing-date">
 Apr 27, 2020
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="7" data-categories="ABCD,R" data-listing-date-sort="1564545600000" data-listing-file-modified-sort="1652749531000" data-listing-reading-time-sort="0.27">
+<div class="quarto-post image-right" data-index="7" data-categories="ABCD,R" data-listing-date-sort="1564545600000" data-listing-file-modified-sort="1652749531000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="54">
 <div class="thumbnail">
-<p><a href="./projects/prematurity-analysis/index.html"> <img data-src="./projects/prematurity-analysis/premat-bruno-img.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/prematurity-analysis/index.html" class="no-external"></a></p><a href="./projects/prematurity-analysis/index.html" class="no-external">
+<p class="card-img-top"><img data-src="projects/prematurity-analysis/premat-bruno-img.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/prematurity-analysis/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/prematurity-analysis/index.html">
 <h3 class="no-anchor listing-title">
-Prematurity, Mental Health, and Cognition
+<a href="./projects/prematurity-analysis/index.html" class="no-external">Prematurity, Mental Health, and Cognition</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/prematurity-analysis/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>This is a project examining the effect of premature birth on mental health and neurocognition in a…</p>
+<a href="./projects/prematurity-analysis/index.html" class="no-external">This is a project examining the effect of premature birth on mental health and neurocognition in a…</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/prematurity-analysis/index.html">
+<a href="./projects/prematurity-analysis/index.html" class="no-external">
 <div class="listing-date">
 Jul 31, 2019
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="8" data-categories="R" data-listing-date-sort="1562731200000" data-listing-file-modified-sort="1652749721000" data-listing-reading-time-sort="0.245">
+<div class="quarto-post image-right" data-index="8" data-categories="R" data-listing-date-sort="1562731200000" data-listing-file-modified-sort="1652749721000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="49">
 <div class="thumbnail">
-<a href="./projects/intro-r-workshop/index.html">
-<div class="thumbnail-image">
-
-</div>
-</a><p><a href="./projects/intro-r-workshop/index.html"></a></p>
+<p><a href="./projects/intro-r-workshop/index.html" class="no-external"></a></p><a href="./projects/intro-r-workshop/index.html" class="no-external">
+<div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
+</a><p><a href="./projects/intro-r-workshop/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/intro-r-workshop/index.html">
 <h3 class="no-anchor listing-title">
-Intro to R Workshop
+<a href="./projects/intro-r-workshop/index.html" class="no-external">Intro to R Workshop</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/intro-r-workshop/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>These are some slides for an introductory R and Tidyverse workshop I lead for undergraduates and…</p>
+<a href="./projects/intro-r-workshop/index.html" class="no-external">These are some slides for an introductory R and Tidyverse workshop I lead for undergraduates and…</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/intro-r-workshop/index.html">
+<a href="./projects/intro-r-workshop/index.html" class="no-external">
 <div class="listing-date">
 Jul 10, 2019
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="9" data-categories="ABCD,R" data-listing-date-sort="1561435200000" data-listing-file-modified-sort="1652749566000" data-listing-reading-time-sort="0.135">
+<div class="quarto-post image-right" data-index="9" data-categories="ABCD,R" data-listing-date-sort="1561435200000" data-listing-file-modified-sort="1652749566000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="27">
 <div class="thumbnail">
-<p><a href="./projects/ncog-pub-rome/index.html"> <img data-src="./projects/ncog-pub-rome/ohbm_poster_2019.jpg" class="thumnail-image"> </a></p>
+<p><a href="./projects/ncog-pub-rome/index.html" class="no-external"></a></p><a href="./projects/ncog-pub-rome/index.html" class="no-external">
+<p class="card-img-top"><img data-src="projects/ncog-pub-rome/ohbm_poster_2019.jpg"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/ncog-pub-rome/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/ncog-pub-rome/index.html">
 <h3 class="no-anchor listing-title">
-Cognition and BOLD Signal Related to Early Stages of Puberty
+<a href="./projects/ncog-pub-rome/index.html" class="no-external">Cognition and BOLD Signal Related to Early Stages of Puberty</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/ncog-pub-rome/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>This is the project I presented at the OHBM 2019 conference in Rome.</p>
+<a href="./projects/ncog-pub-rome/index.html" class="no-external">This is the project I presented at the OHBM 2019 conference in Rome.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/ncog-pub-rome/index.html">
+<a href="./projects/ncog-pub-rome/index.html" class="no-external">
 <div class="listing-date">
 Jun 25, 2019
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="10" data-categories="ABCD,Matlab" data-listing-date-sort="1559707200000" data-listing-file-modified-sort="1652749851000" data-listing-reading-time-sort="3.285">
+<div class="quarto-post image-right" data-index="10" data-categories="ABCD,Matlab" data-listing-date-sort="1559707200000" data-listing-file-modified-sort="1652749851000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="657">
 <div class="thumbnail">
-<p><a href="./projects/ABCD-BAT/index.html"> <img data-src="./projects/ABCD-BAT/fig1.png" class="thumnail-image"> </a></p>
+<p><a href="./projects/ABCD-BAT/index.html" class="no-external"></a></p><a href="./projects/ABCD-BAT/index.html" class="no-external">
+<p class="card-img-top"><img data-src="projects/ABCD-BAT/fig1.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/ABCD-BAT/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/ABCD-BAT/index.html">
 <h3 class="no-anchor listing-title">
-ABCD Brain Analysis Tool
+<a href="./projects/ABCD-BAT/index.html" class="no-external">ABCD Brain Analysis Tool</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/ABCD-BAT/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>This is the abstract I submitted to OHBM 2020 for the ABCD Brain Analysis Tool.</p>
+<a href="./projects/ABCD-BAT/index.html" class="no-external">This is the abstract I submitted to OHBM 2020 for the ABCD Brain Analysis Tool.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/ABCD-BAT/index.html">
+<a href="./projects/ABCD-BAT/index.html" class="no-external">
 <div class="listing-date">
 Jun 5, 2019
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="11" data-categories="Shiny,R,ABCD" data-listing-date-sort="1559707200000" data-listing-file-modified-sort="1652749816000" data-listing-reading-time-sort="0.275">
+<div class="quarto-post image-right" data-index="11" data-categories="Shiny,R,ABCD" data-listing-date-sort="1559707200000" data-listing-file-modified-sort="1652749816000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="55">
 <div class="thumbnail">
-<p><a href="./projects/abcd-dd/index.html"> <img data-src="./projects/abcd-dd/data-dict.gif" class="thumnail-image"> </a></p>
+<p><a href="./projects/abcd-dd/index.html" class="no-external"></a></p><a href="./projects/abcd-dd/index.html" class="no-external">
+<p class="card-img-top"><img data-src="projects/abcd-dd/data-dict.gif"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/abcd-dd/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/abcd-dd/index.html">
 <h3 class="no-anchor listing-title">
-ABCD Data Dictionary
+<a href="./projects/abcd-dd/index.html" class="no-external">ABCD Data Dictionary</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/abcd-dd/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>A searchable data dictionary and ABCD release notes all in one place.</p>
+<a href="./projects/abcd-dd/index.html" class="no-external">A searchable data dictionary and ABCD release notes all in one place.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/abcd-dd/index.html">
+<a href="./projects/abcd-dd/index.html" class="no-external">
 <div class="listing-date">
 Jun 5, 2019
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="12" data-categories="ABCD,Shiny,R" data-listing-date-sort="1546664400000" data-listing-file-modified-sort="1652749837000" data-listing-reading-time-sort="0.33">
+<div class="quarto-post image-right" data-index="12" data-categories="ABCD,Shiny,R" data-listing-date-sort="1546664400000" data-listing-file-modified-sort="1652749837000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="66">
 <div class="thumbnail">
-<p><a href="./projects/abcd-db-builder/index.html"> <img data-src="./projects/abcd-db-builder/abcd-db-build.gif" class="thumnail-image"> </a></p>
+<p><a href="./projects/abcd-db-builder/index.html" class="no-external"></a></p><a href="./projects/abcd-db-builder/index.html" class="no-external">
+<p class="card-img-top"><img data-src="projects/abcd-db-builder/abcd-db-build.gif"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./projects/abcd-db-builder/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./projects/abcd-db-builder/index.html">
 <h3 class="no-anchor listing-title">
-ABCD Database Builder
+<a href="./projects/abcd-db-builder/index.html" class="no-external">ABCD Database Builder</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./projects/abcd-db-builder/index.html" class="no-external"></a>
 </div>
 <div class="listing-description">
-<p>This is an app I built in Shiny to help ABCD Researchers download ABCD datasets.</p>
+<a href="./projects/abcd-db-builder/index.html" class="no-external">This is an app I built in Shiny to help ABCD Researchers download ABCD datasets.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./projects/abcd-db-builder/index.html">
+<a href="./projects/abcd-db-builder/index.html" class="no-external">
 <div class="listing-date">
 Jan 5, 2019
 </div>
@@ -532,9 +573,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -570,10 +625,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -583,8 +637,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -599,6 +662,233 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -639,6 +929,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 
